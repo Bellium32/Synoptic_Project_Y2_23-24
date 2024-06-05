@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Forecast</h1>
+        <div id="today">
+            <!-- Today's weather will be displayed here -->
+        </div>
+        <button id="ttsToday">Read Today's Weather</button>
+        <div id="hourly">
+            <!-- Hourly weather update will be displayed here -->
+        </div>
+        <button id="ttsHourly">Read Hourly Weather</button>
+        <div id="forecast">
+            <!-- 5-day weather forecast will be displayed here -->
+        </div>
+        <button id="ttsForecast">Read 5-Day Forecast</button>
+        <h2>Register your phone number</h2>
+        <form id="registerForm">
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required>
+            <button type="submit">Register</button>
+        </form>
+        <div id="registeredNumbers">
+            <!-- Registered phone numbers will be displayed here -->
+        </div>
+        <div id="senMonorom">
+            <!-- Sen Monorom weather data will be displayed here -->
+        </div>        
+        <button id="ttsSenMonorom">Read Sen Monorom Weather</button>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
