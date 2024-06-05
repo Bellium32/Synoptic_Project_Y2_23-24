@@ -39,17 +39,34 @@ def get_weather_emoji(weather_id):
     # Default emoji if condition is not found
     return emoji_map.get(weather_id, "❓")
 
+def get_weather(api_key, lat, lon):
+    # Construct the API request URL
+    url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
+   
+    # Send a GET request to the API
+    response = requests.get(url)
+   
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the JSON response
+        weather_data = response.json()
+        return weather_data
+    else:
+        # Handle errors (e.g., invalid API key, request limits exceeded)
+        print(f"Error fetching weather data: {response.status_code}")
+        return None
+
 def main():
     # Weather API details
     api_key = "d3dda624a81af4587511e0524a1bbc5a"
-    lat = 12.5776539
-    lon = 106.9349172
+    lat = 12.458851
+    lon = 107.175838
 
     # Get weather forecast data
     forecast_data = get_weather_forecast(api_key, lat, lon)
    
     if forecast_data:
-        print("Today's Weather Forecast:")
+        print("Today's Weather Forecast for Pu Ngaol:")
         # Get today's date
         today = datetime.now().date()
        
@@ -65,7 +82,7 @@ def main():
                 # Print the weather information for the hour
                 print(f"{forecast_time.strftime('%Y-%m-%d %H:%M:%S')}: {temp}°C, {weather_description} {weather_emoji}")
        
-        print("\n5-Day Weather Forecast:")
+        print("\n5-Day Weather Forecast for Pu Ngaol:")
         # Initialize variables to calculate daily averages
         daily_temps = {}
         daily_weather = {}
@@ -98,6 +115,25 @@ def main():
             print(f"{date}: Avg Temp: {avg_temp:.2f}°C, Min Temp: {min_temp:.2f}°C, Max Temp: {max_temp:.2f}°C, Midday Weather: {weather_description} {weather_emoji}")
     else:
         print("Unable to retrieve weather forecast data.")
+    lat = 12.5776539
+    lon = 106.9349172
+    
+    print("\nSen Monorom")
+    # Get weather data
+    weather_data = get_weather(api_key, lat, lon)
+   
+    if weather_data:
+        # Extract relevant data
+        temp = weather_data['main']['temp']
+        weather_id = weather_data['weather'][0]['id']
+        weather_description = weather_data['weather'][0]['description']
+        weather_emoji = get_weather_emoji(weather_id)
+       
+        # Print the weather information
+        print(f"Temperature: {temp}°C")
+        print(f"Weather: {weather_description} {weather_emoji}")
+    else:
+        print("Unable to retrieve weather data.")
 
 if __name__ == "__main__":
     main()
