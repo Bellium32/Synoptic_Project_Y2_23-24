@@ -1,6 +1,3 @@
-
-
-
 document.addEventListener('DOMContentLoaded', () => {
 // Function to fetch Sen Monorom weather data from the OpenWeatherMap API
     const fetchSenMonoromWeatherData = async () => {
