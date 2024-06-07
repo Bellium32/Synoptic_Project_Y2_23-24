@@ -114,11 +114,15 @@ def main():
             max_temp = max(temps)
             weather_description, weather_emoji = daily_weather.get(date, ("No data", "❓"))
             #weatherDB.my_Day_Insert("PU", "Saturday", "2024-06-8", "23.95", "20.82", "29.55", "overcast clouds")
+            #Checks to see if a row that has the date and location already exists
             rowExists = weatherDB.my_Day_Select("PU", str(date))
             if rowExists == False:
+                #If it doesn't a new row is created
                 weatherDB.my_Day_Insert("PU", "Day", str(date), str(round(avg_temp, 2)), str(round(min_temp,2 )), str(round(max_temp, 2)), str(weather_description))
             elif rowExists == True:
+                #If it does the existing row is updated with the new data
                 weatherDB.my_Day_Update_Con(str(weather_description), "PU", str(date))    
+                weatherDB.my_Day_Update_Temp(str(round(avg_temp, 2)), str(round(min_temp,2 )), str(round(max_temp, 2)), "PU", str(date))
             #print(f"{date}: Avg Temp: {avg_temp:.2f}°C, Min Temp: {min_temp:.2f}°C, Max Temp: {max_temp:.2f}°C, Midday Weather: {weather_description} {weather_emoji}")
     else:
         print("Unable to retrieve weather forecast data.")
