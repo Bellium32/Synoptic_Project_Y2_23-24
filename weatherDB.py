@@ -48,7 +48,7 @@ def my_Tables_Drop():
     mycursor.execute("DROP TABLE IF EXISTS weatherHour")
     mycursor.execute("DROP TABLE IF EXISTS people")
    
-createAndDrop = 0
+createAndDrop = 4
 if createAndDrop == 1:
     print("Free space")
 if createAndDrop == 2:
@@ -93,15 +93,21 @@ def my_Day_Select(dataL, dataD):
     mycursor.execute(sql, values)
     #Fetches all results that matches the query
     myresult = mycursor.fetchall()
+    if myresult == []:
+        print("nuh uh")
+        return False
     #Prints all results that matches the query
     for p in myresult:
         print(p)
+    return True
 
 def my_Hour_Select(dataL, dataD, dataH):
     sql = "SELECT * FROM weatherHour WHERE location = %s AND date = %s AND hour = %s"
     values = (dataL, dataD, dataH) 
     mycursor.execute(sql, values)
     myresult = mycursor.fetchall()
+    if myresult == []:
+        print("nuh uh")
     for p in myresult:
         print(p)
 
@@ -110,6 +116,9 @@ def my_People_Select(data):
     values = (data, ) 
     mycursor.execute(sql, values)
     myresult = mycursor.fetchall()
+    if myresult == []:
+        print("nuh uh")
+        return False
     for p in myresult:
         print(p)
 
@@ -161,7 +170,7 @@ if createAndDrop == 3:
     my_people_Insert("Timmothy", "Smith", "071411 26345")
 
 if createAndDrop == 4:
-    my_Day_Select("PN", '2024-06-07')
+    my_Day_Select("PN", '2024-06-06')
 
 if createAndDrop == 5:
     my_Day_Insert("PN", "Tuesday", "2024-06-07", "27.3", "23.6", "34.3", "light rain")
@@ -176,6 +185,9 @@ if createAndDrop == 8:
     my_Day_Update_Con("heavy rain","PN", "2024-06-06")
     my_Day_Update_Temp("27.3", "21.6", "34.3","PN", "2024-06-06")
     my_Hour_Update_Con("heavy rain","MO", "2024-06-06", "09:00")
+
+if createAndDrop == 9:
+    my_Day_Select("MO", "Teheehee")
 
 
 #mycursor.execute("SHOW TABLES")
