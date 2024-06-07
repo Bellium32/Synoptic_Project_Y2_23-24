@@ -1,4 +1,5 @@
 import requests
+import weatherDB
 from datetime import datetime, timedelta
 
 def get_weather_forecast(api_key, lat, lon):
@@ -64,7 +65,7 @@ def main():
 
     # Get weather forecast data
     forecast_data = get_weather_forecast(api_key, lat, lon)
-   
+    #weatherDB.my_Day_Insert("PU", "Saturday", "2024-06-8", "23.95", "20.82", "29.55", "overcast clouds")
     if forecast_data:
         print("Today's Weather Forecast for Pu Ngaol:")
         # Get today's date
