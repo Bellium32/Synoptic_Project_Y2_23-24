@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 def get_weather_forecast(api_key, lat, lon):
     # Construct the API request URL for 5-day forecast
     url = f"http://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key}&units=metric"
-   
+
     # Send a GET request to the API
     response = requests.get(url)
    
@@ -113,7 +113,9 @@ def main():
             min_temp = min(temps)
             max_temp = max(temps)
             weather_description, weather_emoji = daily_weather.get(date, ("No data", "❓"))
-            print(f"{date}: Avg Temp: {avg_temp:.2f}°C, Min Temp: {min_temp:.2f}°C, Max Temp: {max_temp:.2f}°C, Midday Weather: {weather_description} {weather_emoji}")
+            #weatherDB.my_Day_Insert("PU", "Saturday", "2024-06-8", "23.95", "20.82", "29.55", "overcast clouds")
+            weatherDB.my_Day_Insert("PU", "Day", str(date), str(round(avg_temp, 2)), str(round(min_temp,2 )), str(round(max_temp, 2)), str(weather_description))
+            #print(f"{date}: Avg Temp: {avg_temp:.2f}°C, Min Temp: {min_temp:.2f}°C, Max Temp: {max_temp:.2f}°C, Midday Weather: {weather_description} {weather_emoji}")
     else:
         print("Unable to retrieve weather forecast data.")
     lat = 12.5776539
