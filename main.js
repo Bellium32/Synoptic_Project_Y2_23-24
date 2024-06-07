@@ -85,10 +85,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const today = new Date().toISOString().split('T')[0];
         const todayWeather = forecastData.list.find(f => f.dt_txt.startsWith(today));
         if (todayWeather) {
+            const weatherId = todayWeather.weather[0].id;
+            const weatherEmoji = getWeatherEmoji(weatherId);
+            const weatherDescription = todayWeather.weather[0].description;
+            const temperature = todayWeather.main.temp;
+            
+            if (weatherId >= 200 && weatherId < 300) {
+                showPopup("Warning: Thunderstorm expected today!");
+            }
+
             document.getElementById('today').innerHTML = `
-                <div class="weather-info">
-                    <div>${getWeatherEmoji(todayWeather.weather[0].id)} ${todayWeather.weather[0].description}</div>
-                    <div class="temperature">${todayWeather.main.temp}°C</div>
+                <div class="weather-info red-block">
+                    <div class="weather-warning">${weatherEmoji} ${weatherDescription}</div>
+                    <div class="temperature">${temperature}°C</div>
                 </div>
                 <div class="temp-range">Low: ${todayWeather.main.temp_min}°C | High: ${todayWeather.main.temp_max}°C</div>
             `;
@@ -123,20 +132,46 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.keys(dailyTemps).forEach(date => {
             if (date !== today) {
                 const temps = dailyTemps[date];
-                const avgTemp = (temps.reduce((a, b) => a + b) / temps.length).toFixed(1);
-                const minTemp = Math.min(...temps).toFixed(1);
-                const maxTemp = Math.max(...temps).toFixed(1);
-                const middayWeather = dailyWeather[date];
-                forecastElement.innerHTML += `
-                    <div class="day-forecast">
-                        <div>${date}</div>
-                        <div>${getWeatherEmoji(middayWeather.weather[0].id)} ${middayWeather.weather[0].description}</div>
-                        <div>${avgTemp}°C (Low: ${minTemp}°C, High: ${maxTemp}°C)</div>
-                    </div>
+                const minTemp = Math.min(...temps);
+                const maxTemp = Math.max(...temps);
+                const forecast = dailyWeather[date];
+                const weatherId = forecast.weather[0].id;
+                const weatherEmoji = getWeatherEmoji(weatherId);
+                const weatherDescription = forecast.weather[0].description;
+
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day-forecast';
+                dayElement.innerHTML = `
+                    <div>${new Date(date).toLocaleDateString()}</div>
+                    <div>${weatherEmoji} ${weatherDescription}</div>
+                    <div>Low: ${minTemp}°C | High: ${maxTemp}°C</div>
                 `;
+                forecastElement.appendChild(dayElement);
             }
         });
     };
+
+    const showPopup = (message) => {
+        const popup = document.getElementById('popup');
+        const popupContent = popup.querySelector('.popup-content p');
+        popupContent.textContent = message;
+        popup.style.display = 'block';
+    };
+
+    const closePopup = () => {
+        const popup = document.getElementById('popup');
+        popup.style.display = 'none';
+    };
+
+    document.querySelector('.close-button').addEventListener('click', closePopup);
+
+    // Fetch and display weather data
+    fetchWeatherData().then(forecastData => {
+        if (forecastData) {
+            displayWeatherData(forecastData);
+        }
+    });
+    
     
     fetchWeatherData().then(forecastData => {
         if (forecastData) {
