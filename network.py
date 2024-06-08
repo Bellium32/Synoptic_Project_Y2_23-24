@@ -1,5 +1,5 @@
 import requests
-import weatherDB
+import weatherDB2
 from datetime import datetime, timedelta
 
 def get_weather_forecast(api_key, lat, lon):
@@ -94,10 +94,14 @@ def main():
         # Calculate average temperature and midday weather for each day
         for forecast in forecast_data['list']:
             forecast_time = datetime.strptime(forecast['dt_txt'], "%Y-%m-%d %H:%M:%S")
+            #So if here we're stripping forcast's time from the forcast_data, is there a place where 
+            #we're stripping the forcasts details that we care about as well?
             forecast_date = forecast_time.date()
 
-            for l in forecast_data:
-                    weatherDB.my_Day_Update_Con(str(weather_id), "PU", str(date))
+            #for l in forecast_data:
+            #print(str(forecast_data))
+            weatherDB2.my_Day_Insert("PU", "Today", str(forecast_date), str(forecast_data))
+                    #weatherDB2.my_Day_Update_Con(str(weather_id), "PU", str(date))
             if forecast_date == today:
                 
                 continue  # Skip today's data
@@ -122,14 +126,13 @@ def main():
             weather_description, weather_emoji = daily_weather.get(date, ("No data", "❓"))
             #weatherDB.my_Day_Insert("PU", "Saturday", "2024-06-8", "23.95", "20.82", "29.55", "overcast clouds")
             #Checks to see if a row that has the date and location already exists
-            rowExists = weatherDB.my_Day_Select("PU", str(date))
-            if rowExists == False:
-                #If it doesn't a new row is created
-                weatherDB.my_Day_Insert("PU", "Day", str(date), str(round(avg_temp, 2)), str(round(min_temp,2 )), str(round(max_temp, 2)), str(weather_id))
-            elif rowExists == True:
+            #rowExists = weatherDB2.my_Day_Select("PU", str(date))
+            # if rowExists == False:
+            #     #If it doesn't a new row is created
+                
+            # elif rowExists == True:
                 #If it does the existing row is updated with the new data
-                weatherDB.my_Day_Update_Con(str(weather_id), "PU", str(date))    
-                weatherDB.my_Day_Update_Temp(str(round(avg_temp, 2)), str(round(min_temp,2 )), str(round(max_temp, 2)), "PU", str(date))
+                
             #print(f"{date}: Avg Temp: {avg_temp:.2f}°C, Min Temp: {min_temp:.2f}°C, Max Temp: {max_temp:.2f}°C, Midday Weather: {weather_description} {weather_emoji}")
     else:
         print("Unable to retrieve weather forecast data.")
