@@ -93,22 +93,28 @@ def main():
 
         # Calculate average temperature and midday weather for each day
         for forecast in forecast_data['list']:
+            
             forecast_time = datetime.strptime(forecast['dt_txt'], "%Y-%m-%d %H:%M:%S")
+            
             #So if here we're stripping forcast's time from the forcast_data, is there a place where 
             #we're stripping the forcasts details that we care about as well?
             forecast_date = forecast_time.date()
-
+            forecast_day_time = forecast_time.time()
+            print(forecast_day_time)
+            #weatherDB2.my_Day_Insert("PU", "Today", str(forecast_date), str(forecast))
             #for l in forecast_data:
             #print(str(forecast_data))
-            weatherDB2.my_Day_Insert("PU", "Today", str(forecast_date), str(forecast_data))
+            
                     #weatherDB2.my_Day_Update_Con(str(weather_id), "PU", str(date))
             if forecast_date == today:
                 
                 continue  # Skip today's data
+            
             temp = forecast['main']['temp']
             weather_id = forecast['weather'][0]['id']
             weather_description = forecast['weather'][0]['description']
             weather_emoji = get_weather_emoji(weather_id)
+            
 
             if forecast_date not in daily_temps:
                 daily_temps[forecast_date] = []
