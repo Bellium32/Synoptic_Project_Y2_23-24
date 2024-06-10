@@ -1,6 +1,7 @@
 import requests
 import weatherDB2
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+import calendar
 
 def get_weather_forecast(api_key, lat, lon):
     # Construct the API request URL for 5-day forecast
@@ -77,7 +78,19 @@ def main():
         # Extract relevant data for each hour
         for forecast in forecast_data['list']:
             forecast_time = datetime.strptime(forecast['dt_txt'], "%Y-%m-%d %H:%M:%S")
+            forecast_date = forecast_time.date()
+            forecast_day_time = forecast_time.time()
+            hour_row_exist = weatherDB2.my_Hour_Select_Check("PN", str(forecast_date), str(forecast_day_time))
+            
+            if hour_row_exist == False:
+                weatherDB2.my_Hour_Insert("PN", str(forecast_day_time), str(forecast_date), forecast)
+            
+            elif hour_row_exist == True:
+                weatherDB2.my_Hour_Update_Weather(forecast, "PN", str(forecast_date), str(forecast_day_time))
+           
+            
             if forecast_time.date() == today and forecast_time.hour <= 23:
+                #forecastDB = weatherDB2.my_Hour_Select_WeatherID("PN", str(forecast_date), str(forecast_day_time))
                 temp = forecast['main']['temp']
                 weather_id = forecast['weather'][0]['id']
                 weather_description = forecast['weather'][0]['description']
@@ -99,13 +112,25 @@ def main():
             #So if here we're stripping forcast's time from the forcast_data, is there a place where 
             #we're stripping the forcasts details that we care about as well?
             forecast_date = forecast_time.date()
+            forecast_day_day = calendar.day_name[forecast_time.weekday()]
             forecast_day_time = forecast_time.time()
-            print(forecast_day_time)
-            #weatherDB2.my_Day_Insert("PU", "Today", str(forecast_date), str(forecast))
-            #for l in forecast_data:
-            #print(str(forecast_data))
+            
+            day_row_exist = weatherDB2.my_Day_Select_Check("PN", str(forecast_date))
+            hour_row_exist = weatherDB2.my_Hour_Select_Check("PN", str(forecast_date), str(forecast_day_time))
+            if str(forecast_day_time) == "12:00:00":
+                if day_row_exist == False:
+                    weatherDB2.my_Day_Insert("PN", str(forecast_day_day), str(forecast_date), str(forecast))           
+                elif day_row_exist == True:
+                    weatherDB2.my_Day_Update_Weather(str(forecast), "PN", str(forecast_date))
+                    #print(weatherDB2.my_Day_Select_WeatherID("PN", "2024-06-12"))
             
                     #weatherDB2.my_Day_Update_Con(str(weather_id), "PU", str(date))
+                    
+            if hour_row_exist == False:
+                weatherDB2.my_Hour_Insert("PN", str(forecast_day_time), str(forecast_date), str(forecast))
+            
+            elif hour_row_exist == True:
+                weatherDB2.my_Hour_Update_Weather(str(forecast), "PN", str(forecast_date), str(forecast_day_time))
             if forecast_date == today:
                 
                 continue  # Skip today's data
