@@ -1,5 +1,5 @@
 import requests
-import weatherDB3
+import weatherDB4
 from datetime import datetime, timedelta, date
 import calendar
 
@@ -41,40 +41,35 @@ def get_weather_emoji(weather_id):
     # Default emoji if condition is not found
     return emoji_map.get(weather_id, "❓")
 
-def hellhellhell(forecast):
+def hellhellhell(forecast, forecast_time):
+    #print(forecast)
+    
         # Extract data from JSON
     main = forecast['main']
+    #print(main['temp'])
     weather = forecast['weather'][0]
     wind = forecast['wind']
     clouds_all = forecast['clouds']['all']
     visibility = forecast['visibility']
     pop = forecast['pop']
-    rain_3h = forecast['rain']['3h'] 
+    #rain_3h = forecast['rain']['3h'] 
     sys_pod = forecast['sys']['pod']
     dt = forecast['dt']
     dt_txt = forecast['dt_txt']
 
     # Insert into weatherTemp table and get the ID
-    wTempId = weatherDB3.my_WeatherTemp_Insert(
-        main['temp'], main['feels_like'], main['temp_min'], main['temp_max'],
-        main['pressure'], main['sea_level'], main['grnd_level'], main['humidity'], main['temp_kf']
-    )
+    weatherDB4.my_WeatherInfo_Insert(
+    dt, main['temp'], main['feels_like'], main['temp_min'], main['temp_max'],
+    main['pressure'], main['sea_level'], main['grnd_level'], main['humidity'], main['temp_kf'],
+    weather['id'], weather['main'], weather['description'], weather['icon'],
+    clouds_all, wind['speed'], wind['deg'], wind['gust'],
+    visibility, pop, 0.12, sys_pod, dt_txt, "PN")
 
-    # Insert into weatherStats table and get the ID
-    wStatsId = weatherDB3.my_WeatherStats_Insert(
-        weather['id'], weather['main'], weather['description'], weather['icon']
-    )
-
-    # Insert into weatherWind table and get the ID
-    wWindId = weatherDB3.my_WindData_Insert(
-        wind['speed'], wind['deg'], wind['gust']
-    )
-
-    # Insert into weatherInfo table
-    weatherDB3.my_WeatherInfo_Insert(
-        dt, wTempId, wStatsId, clouds_all, wWindId, visibility, pop, rain_3h, sys_pod, dt_txt
-    )
-
+   
+    #print(forecast_time)
+    #print(int(WEATHERWIZARD[0]))
+    #return int(WEATHERWIZARD[0])
+    #return WEATHERWIZARD
 def get_weather(api_key, lat, lon):
     # Construct the API request URL
     url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
@@ -108,13 +103,17 @@ def main():
         print("Today's Weather Forecast for Pu Ngaol:")
         # Get today's date
         today = datetime.now().date()
-       
+        
         # Extract relevant data for each hour
         for forecast in forecast_data['list']:
+            
             forecast_time = datetime.strptime(forecast['dt_txt'], "%Y-%m-%d %H:%M:%S")
             forecast_date = forecast_time.date()
             forecast_day_time = forecast_time.time()
-            hellhellhell(forecast)
+            forecast_ID = hellhellhell(forecast, forecast_time)
+            
+            
+            
             # hour_row_exist = weatherDB2.my_Hour_Select_Check("PN", str(forecast_date), str(forecast_day_time))
             
             # if hour_row_exist == False:
@@ -130,7 +129,7 @@ def main():
                 weather_id = forecast['weather'][0]['id']
                 weather_description = forecast['weather'][0]['description']
                 weather_emoji = get_weather_emoji(weather_id)
-                print(temp)
+                #print(temp)
                
                 # Print the weather information for the hour
                 print(f"{forecast_time.strftime('%Y-%m-%d %H:%M:%S')}: {temp}°C, {weather_description} {weather_emoji}")
@@ -151,22 +150,25 @@ def main():
             forecast_day_day = calendar.day_name[forecast_time.weekday()]
             forecast_day_time = forecast_time.time()
             
-            # day_row_exist = weatherDB2.my_Day_Select_Check("PN", str(forecast_date))
-            # hour_row_exist = weatherDB2.my_Hour_Select_Check("PN", str(forecast_date), str(forecast_day_time))
-            # if str(forecast_day_time) == "12:00:00":
-            #     if day_row_exist == False:
-            #         weatherDB2.my_Day_Insert("PN", str(forecast_day_day), str(forecast_date), str(forecast))           
-            #     elif day_row_exist == True:
-            #         weatherDB2.my_Day_Update_Weather(str(forecast), "PN", str(forecast_date))
-            #         #print(weatherDB2.my_Day_Select_WeatherID("PN", "2024-06-12"))
-            
-            #         #weatherDB2.my_Day_Update_Con(str(weather_id), "PU", str(date))
+            day_row_exist = weatherDB4.my_Day_Select_Check("PN", str(forecast_date))
+            WEATHERWIZARD = weatherDB4.my_W_Info_Select_WeatherID("PN", forecast_time)
+            forecast_ID = int(WEATHERWIZARD[0])
+            hour_row_exist = weatherDB4.my_Hour_Select_Check("PN", str(forecast_date), str(forecast_day_time))
+            if str(forecast_day_time) == "12:00:00":
+                if day_row_exist == False:
                     
-            # if hour_row_exist == False:
-            #     weatherDB2.my_Hour_Insert("PN", str(forecast_day_time), str(forecast_date), str(forecast))
+                    weatherDB4.my_Day_Insert("PN", str(forecast_day_day), str(forecast_date), forecast_ID)           
+                #elif day_row_exist == True:
+                    #weatherDB4.my_Day_Update_Weather(forecast_ID, "PN", str(forecast_date))
+                    #print(weatherDB2.my_Day_Select_WeatherID("PN", "2024-06-12"))
+            
+                    #weatherDB2.my_Day_Update_Con(str(weather_id), "PU", str(date))
+                    
+            if hour_row_exist == False:
+                 weatherDB4.my_Hour_Insert("PN", str(forecast_day_time), str(forecast_date), forecast_ID)
             
             # elif hour_row_exist == True:
-            #     weatherDB2.my_Hour_Update_Weather(str(forecast), "PN", str(forecast_date), str(forecast_day_time))
+            #     weatherDB4.my_Hour_Update_Weather(str(forecast), "PN", str(forecast_date), str(forecast_day_time))
             if forecast_date == today:
                 
                 continue  # Skip today's data

@@ -20,8 +20,8 @@ if databaseExist == False:
     user="root",
     password="pass"
     )
-    mycursor = mydb.cursor()
-    mycursor.execute("CREATE DATABASE weatherdb3")
+    mycursor = mydb.cursor(buffered=True)
+    mycursor.execute("CREATE DATABASE weatherdb4")
 
 else:
     #Connects the codebase to the database using this authentication
@@ -29,30 +29,31 @@ else:
     host="localhost",
     user="root",
     password="pass",
-    database="weatherdb3"
+    database="weatherdb4"
     )
     
     #Creates a cursor object that allows us to pass commands to the database
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(buffered=True)
+    mycursor2 = mydb.cursor
     databaseRECORD = False
 def my_Tables_Create():
     #SQL commands to create tables
-    mycursor.execute("CREATE TABLE weatherDay (wDayId INT AUTO_INCREMENT PRIMARY KEY, location VARCHAR(5), day VARCHAR(10), date DATE,"
-                     "weatherData TEXT)")
-    mycursor.execute("CREATE TABLE weatherHour (wHourId INT AUTO_INCREMENT PRIMARY KEY, location VARCHAR(5), hour TIME, date DATE,"
-                     "weatherData TEXT)")
+    
+    mycursor.execute("CREATE TABLE weatherInfo (wDataId INT AUTO_INCREMENT PRIMARY KEY, dt INT, "
+                     "temp FLOAT(24), feels_like FLOAT(24), temp_min FLOAT(24), "
+                     "temp_max FLOAT(24), pressure INT, sea_level INT, grnd_level INT, humidity INT, temp_kf FLOAT(24), "
+                     "weather_id INT, weather_main VARCHAR(25), weather_description VARCHAR(50), weather_icon VARCHAR(10), "
+                     "clouds_all INT, wind_speed FLOAT(24), wind_deg INT, wind_gust FLOAT(24), visibility INT, pop FLOAT, "
+                     "rain_3h FLOAT(24), sys_pod VARCHAR(5), dt_txt DATETIME, location VARCHAR(5))")
+    
+    
+    mycursor.execute("CREATE TABLE weatherDay (wDayId INT AUTO_INCREMENT PRIMARY KEY, weatherData INT, location VARCHAR(5), day VARCHAR(10), date DATE, "
+                     "FOREIGN KEY (weatherData) REFERENCES weatherInfo(wDataId))")
+    mycursor.execute("CREATE TABLE weatherHour (wHourId INT AUTO_INCREMENT PRIMARY KEY, weatherData INT, location VARCHAR(5), hour TIME, date DATE, "
+                     "FOREIGN KEY (weatherData) REFERENCES weatherInfo(wDataId))")
     mycursor.execute("CREATE TABLE people (peopleId INT AUTO_INCREMENT PRIMARY KEY, fname VARCHAR(255), lname VARCHAR(255), phoneNumber VARCHAR(15))")
+                     
     
-    mycursor.execute("CREATE TABLE weatherTemp (wTempId INT AUTO_INCREMENT PRIMARY KEY,temp DECIMAL(2,2), feels_like DECIMAL(2,2), temp_min DECIMAL(2,2), "
-                     "temp_max DECIMAL(2,2), pressure INT, sea_level INT, grnd_level INT, humidity INT, temp_kf DECIMAL(2,2))")                  
-    mycursor.execute("CREATE TABLE weatherStats (wStatsId INT AUTO_INCREMENT PRIMARY KEY, weather_id INT, weather_main VARCHAR(25), "
-                     "weather_description VARCHAR(50), weather_icon VARCHAR(10))")
-    mycursor.execute("CREATE TABLE weatherWind (wWindId INT AUTO_INCREMENT PRIMARY KEY, wind_speed DECIMAL(2,2), wind_deg INT, wind_gust DECIMAL(2,2))")
-    
-    mycursor.execute("CREATE TABLE weatherInfo (wDataId INT AUTO_INCREMENT PRIMARY KEY, dt INT, wTempId INT, wStatsId INT, wWindId INT, "
-                     " FOREIGN KEY (wTempId) REFERENCES weatherTemp(wTempId), FOREIGN KEY (wStatsId) REFERENCES weatherStats(wStatsId), "
-                     "clouds_all INT, FOREIGN KEY (wWindId) REFERENCES weatherWind(wWindId), visibility INT, pop FLOAT, "
-                     "rain_3h DECIMAL(2,2), sys_pod VARCHAR(5), dt_txt DATETIME)")
     
     
   
@@ -64,19 +65,19 @@ def my_Tables_Drop():
     mycursor.execute("DROP TABLE IF EXISTS weatherHour")
     mycursor.execute("DROP TABLE IF EXISTS people")
     mycursor.execute("DROP TABLE IF EXISTS weatherInfo")
-    mycursor.execute("DROP TABLE IF EXISTS weatherTemp")
-    mycursor.execute("DROP TABLE IF EXISTS weatherStats")
-    mycursor.execute("DROP TABLE IF EXISTS weatherWind")
+
     
 def my_Tables_Truncate():
+    mycursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+    mycursor.execute("TRUNCATE TABLE weatherInfo")
     mycursor.execute("TRUNCATE TABLE weatherDay")
     mycursor.execute("TRUNCATE TABLE weatherHour")
-    mycursor.execute("TRUNCATE TABLE weatherInfo")
-    mycursor.execute("TRUNCATE TABLE weatherTemp")
-    mycursor.execute("TRUNCATE TABLE weatherStats")
-    mycursor.execute("TRUNCATE TABLE weatherWind")
+    mycursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+    
    
-createAndDrop = 0
+
+   
+createAndDrop = 10
 if createAndDrop == 1:
     print("Free space")
 if createAndDrop == 2:
@@ -187,10 +188,10 @@ def my_Day_Update_Weather(dataW, dataL, dataD, ):
     #Updates the database for the weatherData on that day + location
     sql = "UPDATE weatherDay SET weatherData = %s WHERE location = %s AND date = %s"
     values = (dataW, dataL, dataD, ) 
-    mycursor.execute(sql, values)
+    mycursor2.execute(sql, values)
     myresult = mycursor.fetchall()
-    for p in myresult:
-        print(p)
+    # for p in myresult:
+    #     print(p)
     mydb.commit()
     if databaseRECORD == True:
         print(mycursor.rowcount, "record(s) affected")    
@@ -206,42 +207,54 @@ def my_Hour_Update_Weather(dataW, dataL, dataD, dataH, ):
     if databaseRECORD == True:
         print(mycursor.rowcount, "record(s) affected")  
         
-def my_WeatherInfo_Insert(dt, wTempId, wStatsId, clouds_all, wWindId, visibility, pop, rain_3h, sys_pod, dt_txt):
+def my_WeatherInfo_Insert(dt, temp, feels_like, temp_min, temp_max, pressure, sea_level, grnd_level, 
+                          humidity, temp_kf, weather_id, weather_main, weather_description, weather_icon, 
+                          clouds_all, wind_speed, wind_deg, wind_gust, visibility, pop, rain_3h, sys_pod, dt_txt, location):
     sql = """
     INSERT INTO weatherInfo (
-        dt, wTempId, wStatsId, clouds_all, wWindId, visibility, pop, rain_3h, sys_pod, dt_txt
-    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        dt, temp, feels_like, temp_min, temp_max, pressure, sea_level, grnd_level, humidity, temp_kf, 
+        weather_id, weather_main, weather_description, weather_icon, clouds_all, wind_speed, wind_deg, wind_gust, 
+        visibility, pop, rain_3h, sys_pod, dt_txt, location
+    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
-    values = (dt, wTempId, wStatsId, clouds_all, wWindId, visibility, pop, rain_3h, sys_pod, dt_txt)
+    values = (dt, temp, feels_like, temp_min, temp_max, pressure, sea_level, grnd_level, humidity,
+              temp_kf, weather_id, weather_main, weather_description, weather_icon, clouds_all,
+              wind_speed, wind_deg, wind_gust, visibility, pop, rain_3h, sys_pod, dt_txt, location)
     mycursor.execute(sql, values)
     mydb.commit()
-    if databaseRECORD:
+    if databaseRECORD == True:
         print(mycursor.rowcount, "record inserted.")
+
         
-        
-def my_WeatherTemp_Insert(temp, feels_like, temp_min, temp_max, pressure, sea_level, grnd_level, humidity, temp_kf):
-    sql = "INSERT INTO weatherTemp (temp, feels_like, temp_min, temp_max, pressure, sea_level, grnd_level, humidity, temp_kf) VALUES (%d, %d, %d, %d, %d, %d, %d, %d, %d)"
-    values = (temp, feels_like, temp_min, temp_max, pressure, sea_level, grnd_level, humidity, temp_kf)
+def my_W_Info_Select_WeatherID(dataL, dataDT):
+    #Finds the data from within the database that matches the parameters
+    sql = "SELECT wDataId FROM weatherInfo WHERE location = %s AND dt_txt = %s"
+    values = (dataL, dataDT) 
     mycursor.execute(sql, values)
-    mydb.commit()
-    if databaseRECORD:
-        print(mycursor.rowcount, "record inserted.")
-               
-def my_WeatherStats_Insert(weather_id, weather_main, weather_description, weather_icon):
-    sql = "INSERT INTO weatherStats (weather_id, weather_main, weather_description, weather_icon) VALUES (%d, %s, %s, %s)"
-    values = (weather_id, weather_main, weather_description, weather_icon)
+    #Fetches all results that matches the query
+    myresult = mycursor.fetchone()
+    if myresult == []:
+         print("nuh uh")
+    #    return False
+    #Prints all results that matches the query
+    # for p in myresult:
+    #     print(p)
+    return myresult
+
+def my_W_Temp_Select_WeatherID(dataID):
+    #Finds the data from within the database that matches the parameters
+    sql = "SELECT temp FROM weatherInfo WHERE wDataId = %s"
+    values = (dataID, ) 
     mycursor.execute(sql, values)
-    mydb.commit()
-    if databaseRECORD:
-        print(mycursor.rowcount, "record inserted.")
-      
-def my_WindData_Insert(wind_speed, wind_deg, wind_gust):
-    sql = "INSERT INTO weatherWind (wind_speed, wind_deg, wind_gust) VALUES (%d, %d, %d)"
-    values = (wind_speed, wind_deg, wind_gust)
-    mycursor.execute(sql, values)
-    mydb.commit()
-    if databaseRECORD:
-        print(mycursor.rowcount, "record inserted.")
+    #Fetches all results that matches the query
+    myresult = mycursor.fetchone()
+    if myresult == []:
+         print("nuh uh")
+    #    return False
+    #Prints all results that matches the query
+    # for p in myresult:
+    #     print(p)
+    return str(myresult[0])
         
 if createAndDrop == 3:                   
     my_Day_Insert("PN", "Monday", "2024-06-06", "2114")
@@ -255,8 +268,7 @@ if createAndDrop == 5:
     my_Day_Insert("PN", "Tuesday", "2024-06-07", "8442")
 
 if createAndDrop == 6:
-    print("Jooe")
-    #my_Hour_Select("MO", '2024-06-08', "09:00")
+    my_Hour_Select_Check("MO", '2024-06-08', "09:00")
 
 if createAndDrop == 7:
     my_People_Select("071411 26345")
@@ -267,6 +279,10 @@ if createAndDrop == 8:
 
 if createAndDrop == 9:
     my_Day_Select_Check("MO", "Teheehee")
+    
+if createAndDrop == 10:
+    tempemp = my_W_Temp_Select_WeatherID(7, )
+    print(tempemp)
 
 
 #mycursor.execute("SHOW TABLES")
