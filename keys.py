@@ -1,5 +1,5 @@
-account_sid = 'AC92f2f694d95ababdfac75fd5f5791e2b'
-auth_token = 'bbd996997b1b9b8631f320278585790a'
+account_sid = 'AC50b19517437229d4e7e7229388fd905d'
+auth_token = 'e4862242a4e23393ccd352ec89d19285'
 
 twilio_number = '+12184004601'
-my_phone_number = '+447575767080'
+my_phone_number = '+447951757349'

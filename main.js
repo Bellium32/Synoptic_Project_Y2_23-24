@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             document.getElementById('today').innerHTML = `
                 <div class="${weatherInfoClass}">
-                    <div class="weather-warning">${weatherEmoji} ${weatherDescription}</div>
+                    <div>${weatherEmoji} ${weatherDescription}</div>
                     <div class="temperature">${temperature}°C</div>
                 </div>
                 <div class="temp-range">Low: ${todayWeather.main.temp_min}°C | High: ${todayWeather.main.temp_max}°C</div>
