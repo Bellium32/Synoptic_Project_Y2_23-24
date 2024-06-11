@@ -21,7 +21,7 @@ if databaseExist == False:
     password="pass"
     )
     mycursor = mydb.cursor()
-    mycursor.execute("CREATE DATABASE weatherdb2")
+    mycursor.execute("CREATE DATABASE weatherdb3")
 
 else:
     #Connects the codebase to the database using this authentication
@@ -29,7 +29,7 @@ else:
     host="localhost",
     user="root",
     password="pass",
-    database="weatherdb2"
+    database="weatherdb3"
     )
     
     #Creates a cursor object that allows us to pass commands to the database
@@ -37,23 +37,46 @@ else:
     databaseRECORD = False
 def my_Tables_Create():
     #SQL commands to create tables
-    mycursor.execute("CREATE TABLE weatherDay (id INT AUTO_INCREMENT PRIMARY KEY, location VARCHAR(5), day VARCHAR(10), date DATE,"
+    mycursor.execute("CREATE TABLE weatherDay (wDayId INT AUTO_INCREMENT PRIMARY KEY, location VARCHAR(5), day VARCHAR(10), date DATE,"
                      "weatherData TEXT)")
-    mycursor.execute("CREATE TABLE weatherHour (id INT AUTO_INCREMENT PRIMARY KEY, location VARCHAR(5), hour TIME, date DATE,"
+    mycursor.execute("CREATE TABLE weatherHour (wHourId INT AUTO_INCREMENT PRIMARY KEY, location VARCHAR(5), hour TIME, date DATE,"
                      "weatherData TEXT)")
-    mycursor.execute("CREATE TABLE people (id INT AUTO_INCREMENT PRIMARY KEY, fname VARCHAR(255), lname VARCHAR(255), phoneNumber VARCHAR(15))")
+    mycursor.execute("CREATE TABLE people (peopleId INT AUTO_INCREMENT PRIMARY KEY, fname VARCHAR(255), lname VARCHAR(255), phoneNumber VARCHAR(15))")
+    
+    mycursor.execute("CREATE TABLE weatherTemp (wTempId INT AUTO_INCREMENT PRIMARY KEY,temp DECIMAL(2,2), feels_like DECIMAL(2,2), temp_min DECIMAL(2,2), "
+                     "temp_max DECIMAL(2,2), pressure INT, sea_level INT, grnd_level INT, humidity INT, temp_kf DECIMAL(2,2))")                  
+    mycursor.execute("CREATE TABLE weatherStats (wStatsId INT AUTO_INCREMENT PRIMARY KEY, weather_id INT, weather_main VARCHAR(25), "
+                     "weather_description VARCHAR(50), weather_icon VARCHAR(10))")
+    mycursor.execute("CREATE TABLE weatherWind (wWindId INT AUTO_INCREMENT PRIMARY KEY, wind_speed DECIMAL(2,2), wind_deg INT, wind_gust DECIMAL(2,2))")
+    
+    mycursor.execute("CREATE TABLE weatherInfo (wDataId INT AUTO_INCREMENT PRIMARY KEY, dt INT, wTempId INT, wStatsId INT, wWindId INT, "
+                     " FOREIGN KEY (wTempId) REFERENCES weatherTemp(wTempId), FOREIGN KEY (wStatsId) REFERENCES weatherStats(wStatsId), "
+                     "clouds_all INT, FOREIGN KEY (wWindId) REFERENCES weatherWind(wWindId), visibility INT, pop FLOAT, "
+                     "rain_3h DECIMAL(2,2), sys_pod VARCHAR(5), dt_txt DATETIME)")
+    
+    
+  
+
 
 def my_Tables_Drop():
     #SQL commands to delete (drop) all tables
     mycursor.execute("DROP TABLE IF EXISTS weatherDay")
     mycursor.execute("DROP TABLE IF EXISTS weatherHour")
     mycursor.execute("DROP TABLE IF EXISTS people")
+    mycursor.execute("DROP TABLE IF EXISTS weatherInfo")
+    mycursor.execute("DROP TABLE IF EXISTS weatherTemp")
+    mycursor.execute("DROP TABLE IF EXISTS weatherStats")
+    mycursor.execute("DROP TABLE IF EXISTS weatherWind")
     
 def my_Tables_Truncate():
     mycursor.execute("TRUNCATE TABLE weatherDay")
     mycursor.execute("TRUNCATE TABLE weatherHour")
+    mycursor.execute("TRUNCATE TABLE weatherInfo")
+    mycursor.execute("TRUNCATE TABLE weatherTemp")
+    mycursor.execute("TRUNCATE TABLE weatherStats")
+    mycursor.execute("TRUNCATE TABLE weatherWind")
    
-createAndDrop = 0
+createAndDrop = 2
 if createAndDrop == 1:
     print("Free space")
 if createAndDrop == 2:
@@ -171,8 +194,7 @@ def my_Day_Update_Weather(dataW, dataL, dataD, ):
     mydb.commit()
     if databaseRECORD == True:
         print(mycursor.rowcount, "record(s) affected")    
-     
-    
+        
 def my_Hour_Update_Weather(dataW, dataL, dataD, dataH, ):
     sql = "UPDATE weatherHour SET weatherData = %s WHERE location = %s AND date = %s AND hour = %s"
     values = (dataW, dataL, dataD, dataH, ) 
@@ -183,6 +205,43 @@ def my_Hour_Update_Weather(dataW, dataL, dataD, dataH, ):
     mydb.commit()
     if databaseRECORD == True:
         print(mycursor.rowcount, "record(s) affected")  
+        
+def my_WeatherInfo_Insert(dt, wTempId, wStatsId, clouds_all, wWindId, visibility, pop, rain_3h, sys_pod, dt_txt):
+    sql = """
+    INSERT INTO weatherInfo (
+        dt, wTempId, wStatsId, clouds_all, wWindId, visibility, pop, rain_3h, sys_pod, dt_txt
+    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+    values = (dt, wTempId, wStatsId, clouds_all, wWindId, visibility, pop, rain_3h, sys_pod, dt_txt)
+    mycursor.execute(sql, values)
+    mydb.commit()
+    if databaseRECORD:
+        print(mycursor.rowcount, "record inserted.")
+        
+        
+def my_WeatherTemp_Insert(temp, feels_like, temp_min, temp_max, pressure, sea_level, grnd_level, humidity, temp_kf):
+    sql = "INSERT INTO weatherTemp (temp, feels_like, temp_min, temp_max, pressure, sea_level, grnd_level, humidity, temp_kf) VALUES (%d, %d, %d, %d, %d, %d, %d, %d, %d)"
+    values = (temp, feels_like, temp_min, temp_max, pressure, sea_level, grnd_level, humidity, temp_kf)
+    mycursor.execute(sql, values)
+    mydb.commit()
+    if databaseRECORD:
+        print(mycursor.rowcount, "record inserted.")
+               
+def my_WeatherStats_Insert(weather_id, weather_main, weather_description, weather_icon):
+    sql = "INSERT INTO weatherStats (weather_id, weather_main, weather_description, weather_icon) VALUES (%d, %s, %s, %s)"
+    values = (weather_id, weather_main, weather_description, weather_icon)
+    mycursor.execute(sql, values)
+    mydb.commit()
+    if databaseRECORD:
+        print(mycursor.rowcount, "record inserted.")
+      
+def my_WindData_Insert(wind_speed, wind_deg, wind_gust):
+    sql = "INSERT INTO weatherWind (wind_speed, wind_deg, wind_gust) VALUES (%d, %d, %d)"
+    values = (wind_speed, wind_deg, wind_gust)
+    mycursor.execute(sql, values)
+    mydb.commit()
+    if databaseRECORD:
+        print(mycursor.rowcount, "record inserted.")
         
 if createAndDrop == 3:                   
     my_Day_Insert("PN", "Monday", "2024-06-06", "2114")
