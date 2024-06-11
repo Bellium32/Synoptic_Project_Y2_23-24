@@ -172,7 +172,7 @@ def my_Hour_Select_WeatherID(dataL, dataD, dataH):
     #Prints all results that matches the query
     # for p in myresult:
     #     print(p)
-    return myresult
+    return int(myresult[0])
 
 def my_People_Select(data):
     sql = "SELECT * FROM people WHERE phoneNumber = %s"
@@ -225,6 +225,16 @@ def my_WeatherInfo_Insert(dt, temp, feels_like, temp_min, temp_max, pressure, se
     mydb.commit()
     if databaseRECORD == True:
         print(mycursor.rowcount, "record inserted.")
+        
+def my_WeatherInfo_Select_Check(dataL, dataDT):
+    sql = "SELECT * FROM weatherInfo WHERE location = %s AND dt_txt = %s"
+    values = (dataL, dataDT) 
+    mycursor.execute(sql, values)
+    myresult = mycursor.fetchall()
+    if myresult == []:
+        return False
+        print("nuh uh")
+    return True
 
         
 def my_W_Info_Select_WeatherID(dataL, dataDT):
@@ -320,6 +330,31 @@ def my_W_All_Select_WeatherID(dataA, dataID):
      
     #return str(myresult[0])
         
+        
+def my_WeatherInfo_Update(dt, temp, feels_like, temp_min, temp_max, pressure, sea_level, grnd_level, 
+                        humidity, temp_kf, weather_id, weather_main, weather_description, weather_icon, 
+                        clouds_all, wind_speed, wind_deg, wind_gust, visibility, pop, rain_3h, sys_pod, 
+                        dt_txt, location):
+    sql = """
+        UPDATE weatherInfo
+        SET dt = %s, temp = %s, feels_like = %s, temp_min = %s, temp_max = %s, pressure = %s, sea_level = %s, grnd_level = %s,
+            humidity = %s, temp_kf = %s, weather_id = %s, weather_main = %s, weather_description = %s, weather_icon = %s,
+            clouds_all = %s, wind_speed = %s, wind_deg = %s, wind_gust = %s, visibility = %s, pop = %s, rain_3h = %s,
+            sys_pod = %s
+        WHERE dt_txt = %s AND location = %s
+    """
+    values = (
+        dt, temp, feels_like, temp_min, temp_max, pressure, sea_level, grnd_level, humidity, temp_kf, weather_id, 
+        weather_main, weather_description, weather_icon, clouds_all, wind_speed, wind_deg, wind_gust, visibility, pop, 
+        rain_3h, sys_pod, dt_txt, location
+    )
+
+    mycursor2.execute(sql, values)
+    mydb.commit()
+
+    if databaseRECORD == True:
+        print(mycursor.rowcount, "record(s) affected")
+
 if createAndDrop == 3:                   
     my_Day_Insert("PN", "Monday", "2024-06-06", "2114")
     my_Hour_Insert("MO", "09:00", "2024-06-06", "6885")
