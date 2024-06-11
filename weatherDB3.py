@@ -76,7 +76,7 @@ def my_Tables_Truncate():
     mycursor.execute("TRUNCATE TABLE weatherStats")
     mycursor.execute("TRUNCATE TABLE weatherWind")
    
-createAndDrop = 2
+createAndDrop = 0
 if createAndDrop == 1:
     print("Free space")
 if createAndDrop == 2:

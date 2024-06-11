@@ -1,5 +1,5 @@
 import requests
-import weatherDB2
+import weatherDB3
 from datetime import datetime, timedelta, date
 import calendar
 
@@ -41,6 +41,40 @@ def get_weather_emoji(weather_id):
     # Default emoji if condition is not found
     return emoji_map.get(weather_id, "❓")
 
+def hellhellhell(forecast):
+        # Extract data from JSON
+    main = forecast['main']
+    weather = forecast['weather'][0]
+    wind = forecast['wind']
+    clouds_all = forecast['clouds']['all']
+    visibility = forecast['visibility']
+    pop = forecast['pop']
+    rain_3h = forecast['rain']['3h'] 
+    sys_pod = forecast['sys']['pod']
+    dt = forecast['dt']
+    dt_txt = forecast['dt_txt']
+
+    # Insert into weatherTemp table and get the ID
+    wTempId = weatherDB3.my_WeatherTemp_Insert(
+        main['temp'], main['feels_like'], main['temp_min'], main['temp_max'],
+        main['pressure'], main['sea_level'], main['grnd_level'], main['humidity'], main['temp_kf']
+    )
+
+    # Insert into weatherStats table and get the ID
+    wStatsId = weatherDB3.my_WeatherStats_Insert(
+        weather['id'], weather['main'], weather['description'], weather['icon']
+    )
+
+    # Insert into weatherWind table and get the ID
+    wWindId = weatherDB3.my_WindData_Insert(
+        wind['speed'], wind['deg'], wind['gust']
+    )
+
+    # Insert into weatherInfo table
+    weatherDB3.my_WeatherInfo_Insert(
+        dt, wTempId, wStatsId, clouds_all, wWindId, visibility, pop, rain_3h, sys_pod, dt_txt
+    )
+
 def get_weather(api_key, lat, lon):
     # Construct the API request URL
     url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
@@ -80,13 +114,14 @@ def main():
             forecast_time = datetime.strptime(forecast['dt_txt'], "%Y-%m-%d %H:%M:%S")
             forecast_date = forecast_time.date()
             forecast_day_time = forecast_time.time()
-            hour_row_exist = weatherDB2.my_Hour_Select_Check("PN", str(forecast_date), str(forecast_day_time))
+            hellhellhell(forecast)
+            # hour_row_exist = weatherDB2.my_Hour_Select_Check("PN", str(forecast_date), str(forecast_day_time))
             
-            if hour_row_exist == False:
-                weatherDB2.my_Hour_Insert("PN", str(forecast_day_time), str(forecast_date), str(forecast))
+            # if hour_row_exist == False:
+            #     weatherDB2.my_Hour_Insert("PN", str(forecast_day_time), str(forecast_date), str(forecast))
             
-            elif hour_row_exist == True:
-                weatherDB2.my_Hour_Update_Weather(str(forecast), "PN", str(forecast_date), str(forecast_day_time))
+            # elif hour_row_exist == True:
+            #     weatherDB2.my_Hour_Update_Weather(str(forecast), "PN", str(forecast_date), str(forecast_day_time))
            
             
             if forecast_time.date() == today and forecast_time.hour <= 23:
@@ -116,22 +151,22 @@ def main():
             forecast_day_day = calendar.day_name[forecast_time.weekday()]
             forecast_day_time = forecast_time.time()
             
-            day_row_exist = weatherDB2.my_Day_Select_Check("PN", str(forecast_date))
-            hour_row_exist = weatherDB2.my_Hour_Select_Check("PN", str(forecast_date), str(forecast_day_time))
-            if str(forecast_day_time) == "12:00:00":
-                if day_row_exist == False:
-                    weatherDB2.my_Day_Insert("PN", str(forecast_day_day), str(forecast_date), str(forecast))           
-                elif day_row_exist == True:
-                    weatherDB2.my_Day_Update_Weather(str(forecast), "PN", str(forecast_date))
-                    #print(weatherDB2.my_Day_Select_WeatherID("PN", "2024-06-12"))
+            # day_row_exist = weatherDB2.my_Day_Select_Check("PN", str(forecast_date))
+            # hour_row_exist = weatherDB2.my_Hour_Select_Check("PN", str(forecast_date), str(forecast_day_time))
+            # if str(forecast_day_time) == "12:00:00":
+            #     if day_row_exist == False:
+            #         weatherDB2.my_Day_Insert("PN", str(forecast_day_day), str(forecast_date), str(forecast))           
+            #     elif day_row_exist == True:
+            #         weatherDB2.my_Day_Update_Weather(str(forecast), "PN", str(forecast_date))
+            #         #print(weatherDB2.my_Day_Select_WeatherID("PN", "2024-06-12"))
             
-                    #weatherDB2.my_Day_Update_Con(str(weather_id), "PU", str(date))
+            #         #weatherDB2.my_Day_Update_Con(str(weather_id), "PU", str(date))
                     
-            if hour_row_exist == False:
-                weatherDB2.my_Hour_Insert("PN", str(forecast_day_time), str(forecast_date), str(forecast))
+            # if hour_row_exist == False:
+            #     weatherDB2.my_Hour_Insert("PN", str(forecast_day_time), str(forecast_date), str(forecast))
             
-            elif hour_row_exist == True:
-                weatherDB2.my_Hour_Update_Weather(str(forecast), "PN", str(forecast_date), str(forecast_day_time))
+            # elif hour_row_exist == True:
+            #     weatherDB2.my_Hour_Update_Weather(str(forecast), "PN", str(forecast_date), str(forecast_day_time))
             if forecast_date == today:
                 
                 continue  # Skip today's data
