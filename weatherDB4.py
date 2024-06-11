@@ -21,6 +21,7 @@ if databaseExist == False:
     password="pass"
     )
     mycursor = mydb.cursor(buffered=True)
+    mycursor2 = mydb.cursor()
     mycursor.execute("CREATE DATABASE weatherdb4")
 
 else:
@@ -34,7 +35,7 @@ else:
     
     #Creates a cursor object that allows us to pass commands to the database
     mycursor = mydb.cursor(buffered=True)
-    mycursor2 = mydb.cursor
+    mycursor2 = mydb.cursor()
     databaseRECORD = False
 def my_Tables_Create():
     #SQL commands to create tables
@@ -77,7 +78,7 @@ def my_Tables_Truncate():
    
 
    
-createAndDrop = 10
+createAndDrop = 0
 if createAndDrop == 1:
     print("Free space")
 if createAndDrop == 2:
@@ -199,10 +200,10 @@ def my_Day_Update_Weather(dataW, dataL, dataD, ):
 def my_Hour_Update_Weather(dataW, dataL, dataD, dataH, ):
     sql = "UPDATE weatherHour SET weatherData = %s WHERE location = %s AND date = %s AND hour = %s"
     values = (dataW, dataL, dataD, dataH, ) 
-    mycursor.execute(sql, values)
+    mycursor2.execute(sql, values)
     myresult = mycursor.fetchall()
-    for p in myresult:
-        print(p)
+    # for p in myresult:
+    #     print(p)
     mydb.commit()
     if databaseRECORD == True:
         print(mycursor.rowcount, "record(s) affected")  
@@ -243,7 +244,7 @@ def my_W_Info_Select_WeatherID(dataL, dataDT):
 
 def my_W_All_Select_WeatherID(dataA, dataID):
     #Finds the data from within the database that matches the parameters
-    sql = "SELECT temp FROM weatherInfo WHERE wDataId = %s"
+    sql = "SELECT * FROM weatherInfo WHERE wDataId = %s"
     values = (dataID, ) 
     mycursor.execute(sql, values)
     #Fetches all results that matches the query
@@ -252,11 +253,72 @@ def my_W_All_Select_WeatherID(dataA, dataID):
          print("nuh uh")
     #    return False
     #Prints all results that matches the query
+    #25 results
+    dataList = []
     for i in myresult:
-        print(i)
+        dataList.append(i)
+        #dataList.append((len[i],i))
+        #print(i)
+    #print(dataList)
+    global dataFound
+   
+    match dataA:
+        case "wDataId":
+            return dataList[0]
+        case "dt":
+            return dataList[1]
+        case "temp":
+            return dataList[2]
+        case "feels_like":
+            return dataList[3]
+        case "temp_min":
+            return dataList[4]
+        case "temp_max":
+            return dataList[5]
+        case "pressure":
+            return dataList[6]
+        case "sea_level":
+            return dataList[7]
+        case "grnd_level":
+            return dataList[8]
+        case "humidity":
+            return dataList[9]
+        case "temp_kf":
+            return dataList[10]
+        case "weather_id":
+            return dataList[11]
+        case "weather_main":
+            return dataList[12]
+        case "weather_description":
+            return dataList[13]
+        case "weather_icon":
+            return dataList[14]
+        case "clouds_all":
+            return dataList[15]
+        case "wind_speed":
+            return dataList[16]
+        case "wind_deg":
+            return dataList[17]
+        case "wind_gust":
+            return dataList[18]
+        case "visibility":
+            return dataList[19]
+        case "pop":
+            return dataList[20]
+        case "rain_3h":
+            return dataList[21]
+        case "sys_pod":
+            return dataList[22]
+        case "dt_txt":
+            return dataList[23]
+        case "location":
+            return dataList[24]
+        case _:
+            return dataList
     # for p in myresult:
     #     print(p)
-    return str(myresult[0])
+     
+    #return str(myresult[0])
         
 if createAndDrop == 3:                   
     my_Day_Insert("PN", "Monday", "2024-06-06", "2114")
@@ -280,10 +342,11 @@ if createAndDrop == 8:
     my_Hour_Update_Weather("2008","MO", "2024-06-06", "09:00")
 
 if createAndDrop == 9:
-    my_Day_Select_Check("MO", "Teheehee")
+    #my_Day_Select_Check("MO", "Teheehee")
+    print("yo")
     
 if createAndDrop == 10:
-    tempemp = my_W_All_Select_WeatherID("j",7, )
+    tempemp = my_W_All_Select_WeatherID("feels_like",7, )
     print(tempemp)
 
 

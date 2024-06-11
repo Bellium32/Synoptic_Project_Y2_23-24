@@ -158,8 +158,8 @@ def main():
                 if day_row_exist == False:
                     
                     weatherDB4.my_Day_Insert("PN", str(forecast_day_day), str(forecast_date), forecast_ID)           
-                #elif day_row_exist == True:
-                    #weatherDB4.my_Day_Update_Weather(forecast_ID, "PN", str(forecast_date))
+                elif day_row_exist == True:
+                    weatherDB4.my_Day_Update_Weather(forecast_ID, "PN", str(forecast_date))
                     #print(weatherDB2.my_Day_Select_WeatherID("PN", "2024-06-12"))
             
                     #weatherDB2.my_Day_Update_Con(str(weather_id), "PU", str(date))
@@ -167,8 +167,8 @@ def main():
             if hour_row_exist == False:
                  weatherDB4.my_Hour_Insert("PN", str(forecast_day_time), str(forecast_date), forecast_ID)
             
-            # elif hour_row_exist == True:
-            #     weatherDB4.my_Hour_Update_Weather(str(forecast), "PN", str(forecast_date), str(forecast_day_time))
+            elif hour_row_exist == True:
+                 weatherDB4.my_Hour_Update_Weather(forecast_ID, "PN", str(forecast_date), str(forecast_day_time))
             if forecast_date == today:
                 
                 continue  # Skip today's data
