@@ -241,7 +241,7 @@ def my_W_Info_Select_WeatherID(dataL, dataDT):
     #     print(p)
     return myresult
 
-def my_W_Temp_Select_WeatherID(dataID):
+def my_W_All_Select_WeatherID(dataA, dataID):
     #Finds the data from within the database that matches the parameters
     sql = "SELECT temp FROM weatherInfo WHERE wDataId = %s"
     values = (dataID, ) 
@@ -252,6 +252,8 @@ def my_W_Temp_Select_WeatherID(dataID):
          print("nuh uh")
     #    return False
     #Prints all results that matches the query
+    for i in myresult:
+        print(i)
     # for p in myresult:
     #     print(p)
     return str(myresult[0])
@@ -281,7 +283,7 @@ if createAndDrop == 9:
     my_Day_Select_Check("MO", "Teheehee")
     
 if createAndDrop == 10:
-    tempemp = my_W_Temp_Select_WeatherID(7, )
+    tempemp = my_W_All_Select_WeatherID("j",7, )
     print(tempemp)
 
 
