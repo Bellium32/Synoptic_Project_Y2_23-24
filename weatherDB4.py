@@ -52,7 +52,7 @@ def my_Tables_Create():
                      "FOREIGN KEY (weatherData) REFERENCES weatherInfo(wDataId))")
     mycursor.execute("CREATE TABLE weatherHour (wHourId INT AUTO_INCREMENT PRIMARY KEY, weatherData INT, location VARCHAR(5), hour TIME, date DATE, "
                      "FOREIGN KEY (weatherData) REFERENCES weatherInfo(wDataId))")
-    mycursor.execute("CREATE TABLE people (peopleId INT AUTO_INCREMENT PRIMARY KEY, fname VARCHAR(255), lname VARCHAR(255), phoneNumber VARCHAR(15))")
+    mycursor.execute("CREATE TABLE people (peopleId INT AUTO_INCREMENT PRIMARY KEY, phoneNumber VARCHAR(15))")
                      
 
 def my_Tables_Drop():
@@ -74,7 +74,7 @@ def my_Tables_Truncate():
    
 
    ###############Set to 2 to create the tables 
-DebugandTesting = 4
+DebugandTesting = 0
 if DebugandTesting == 1:
     print("Free space")
 if DebugandTesting == 2:

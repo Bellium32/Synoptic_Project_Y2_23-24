@@ -56,9 +56,10 @@ def get_weather_message_days(weatherID_Day, Day):
 #                 clouds_all, wind_speed, wind_deg, wind_gust, visibility, pop, rain_3h, sys_pod, 
 #                 dt_txt, location 
                 day = Day
-                temp_min = weatherDB4.my_W_All_Select_WeatherID("temp_min", weatherID_Day)
+                temp_min = weatherDB4.my_W_All_Select_WeatherID("temp", weatherID_Day)
+                print(temp_min)
                 temp_max = weatherDB4.my_W_All_Select_WeatherID("temp_max", weatherID_Day)
-                temp_min = weatherDB4.my_W_All_Select_WeatherID("temp_min", weatherID_Day)
+                print(temp_max)
                 weather_id = weatherDB4.my_W_All_Select_WeatherID("weather_id", weatherID_Day)
                 temp_avg = (temp_min + temp_max)/2
                 weather_description = weatherDB4.my_W_All_Select_WeatherID("weather_description", weatherID_Day)
@@ -69,7 +70,7 @@ def get_weather_message_days(weatherID_Day, Day):
                 #print(f"{weather_time}: Avg Temp: {temp_avg:.2f}°C, Min Temp: {temp_min:.2f}°C, Max Temp: {temp_max:.2f}°C, Midday Weather: {weather_description} {weather_emoji}")
                 # Print the weather information for the hour
                 
-                weather_return = f"{day} {weather_time}: Avg Temp: {temp_avg:.2f}°C, Min Temp: {temp_min:.2f}°C, Max Temp: {temp_max:.2f}°C, Midday Weather: {weather_description} {weather_emoji}"
+                weather_return = f"{day} {weather_time}: Avg Temp: {temp_avg}°C, Min Temp: {temp_min}°C, Max Temp: {temp_max}°C, Midday Weather: {weather_description} {weather_emoji}"
 
                 return weather_return
 # print(todaytimelimit)
@@ -134,6 +135,8 @@ hour_text_send = weather_hour_List(today)
 print("\n Weather of the next 5 day: \n")
 day_text_send = weather_day_List(fivedays)
 
+print(day_text_send)
+print(hour_text_send)
 for printweather in hour_text_send:
     message = client.messages.create (
         body = printweather,
