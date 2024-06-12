@@ -78,7 +78,7 @@ def my_Tables_Truncate():
    
 
    
-createAndDrop = 10
+createAndDrop = 12
 if createAndDrop == 1:
     print("Free space")
 if createAndDrop == 2:
@@ -141,7 +141,7 @@ def my_Day_Select_WeatherID(dataL, dataD):
     mycursor.execute(sql, values)
     #Fetches all results that matches the query
     myresult = mycursor.fetchone()
-    
+
     if myresult == []:
         return 1
     else:
@@ -164,13 +164,9 @@ def my_Hour_Select_WeatherID(dataL, dataD, dataH):
     mycursor.execute(sql, values)
     #Fetches all results that matches the query
     myresult = mycursor.fetchone()
-    # if myresult == []:
-    #     print("nuh uh")
-    #     return False
-    #Prints all results that matches the query
-    # for p in myresult:
-    #     print(p)
-    
+
+    print(myresult)
+    print("check")
     if myresult == []:
         return 1
     else:
@@ -401,7 +397,9 @@ if createAndDrop == 11:
     for i in hourcheck:
 
         print(i[0])
+
+if createAndDrop == 12:
+    printyprint = my_Hour_Select_WeatherID("PN", "2024-06-12", "15:00:00")
+    print(printyprint)
 #mycursor.execute("SHOW TABLES")
-
-
 
