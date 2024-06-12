@@ -194,10 +194,6 @@ def my_Hour_Select_WeatherID(dataL, dataD, dataH):
         print(e)
         return None
 
-
-        
-
-
     
 def my_Hour_Select_WeatherID_Multiple(dataL, dataD):
     #Finds the data from within the database that matches the parameters
@@ -364,8 +360,7 @@ def my_W_All_Select_WeatherID(dataA, dataID):
     #     print(p)
      
     #return str(myresult[0])
-        
-        
+                
 def my_WeatherInfo_Update(dt, temp, feels_like, temp_min, temp_max, pressure, sea_level, grnd_level, 
                         humidity, temp_kf, weather_id, weather_main, weather_description, weather_icon, 
                         clouds_all, wind_speed, wind_deg, wind_gust, visibility, pop, rain_3h, sys_pod, 

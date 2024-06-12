@@ -1,11 +1,11 @@
-#from twilio.rest import Client
+from twilio.rest import Client
 import keys
 from datetime import datetime, timedelta
 import weatherDB4
 import network
 
 
-#client = Client(keys.account_sid, keys.auth_token)
+client = Client(keys.account_sid, keys.auth_token)
 
 today = datetime.today().strftime('%Y-%m-%d')
 tomorrow = datetime.now().date() + timedelta(1)
@@ -81,6 +81,7 @@ def weather_hour_List(today):
         hour_repository = ["00:00:00", "03:00:00", "06:00:00",
                    "09:00:00", "12:00:00", "15:00:00",
                    "18:00:00", "21:00:00"]
+        w_list = []
         match todaytimelimit:
             case 21 | 22 | 23 : 
                     tomorrow = datetime.now().date() + timedelta(1)
@@ -106,26 +107,49 @@ def weather_hour_List(today):
             #print(hour)
             weatherID_Hour = weatherDB4.my_Hour_Select_WeatherID("PN", today, hour)
             WanderWeatherHour = get_weather_message_hour(weatherID_Hour)
-            print(WanderWeatherHour)
-          
+            #print(WanderWeatherHour)
+            w_list.append(WanderWeatherHour)
+        
+        #print(w_list)
+        return w_list
+
 def weather_day_List(fivedays):
+    w_list = []
+    
     for days in range(4): 
         weatherID_Day = weatherDB4.my_Day_Select_WeatherID("PN", fivedays)
         weatherDay_Day = weatherDB4.my_Day_Select_Day("PN", fivedays)
         #get_weather_message_days(weatherID_Day)
         WanderWeatherDay = get_weather_message_days(weatherID_Day, weatherDay_Day)
         fivedays = fivedays + timedelta(1)
-        print(WanderWeatherDay)
+        #print(WanderWeatherDay)
+        w_list.append(WanderWeatherDay)
+        
+    #print(w_list)
+    return w_list
+
 print("Weather of the hour: \n")
-weather_hour_List(today)
+hour_text_send = weather_hour_List(today)
 
 print("\n Weather of the next 5 day: \n")
-weather_day_List(fivedays)
-# message = client.messages.create (
-#     body = "hey its ash, it works :)",
-#     from_=keys.twilio_number,
-#     to=keys.my_phone_number
+day_text_send = weather_day_List(fivedays)
 
-# )
+for printweather in hour_text_send:
+    message = client.messages.create (
+        body = printweather,
+        from_=keys.twilio_number,
+        to=keys.my_phone_number
 
-# print(message.body)
+    )
+
+    print(message.body)
+
+for printweather in day_text_send:
+    message = client.messages.create (
+        body = printweather,
+        from_=keys.twilio_number,
+        to=keys.my_phone_number
+
+    )
+
+    print(message.body)
