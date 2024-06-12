@@ -147,6 +147,20 @@ def my_Day_Select_WeatherID(dataL, dataD):
     else:
         return int(myresult[0])
 
+def my_Day_Select_Day(dataL, dataD):
+    #Finds the data from within the database that matches the parameters
+    sql = "SELECT day FROM weatherDay WHERE location = %s AND date = %s"
+    values = (dataL, dataD, ) 
+    mycursor.execute(sql, values)
+    #Fetches all results that matches the query
+    myresult = mycursor.fetchone()
+
+    if myresult == []:
+        return 1
+    else:
+        return str(myresult[0])
+
+
 def my_Hour_Select_Check(dataL, dataD, dataH):
     sql = "SELECT * FROM weatherHour WHERE location = %s AND date = %s AND hour = %s"
     values = (dataL, dataD, dataH) 
@@ -165,8 +179,6 @@ def my_Hour_Select_WeatherID(dataL, dataD, dataH):
     #Fetches all results that matches the query
     myresult = mycursor.fetchone()
 
-    print(myresult)
-    print("check")
     if myresult == []:
         return 1
     else:
