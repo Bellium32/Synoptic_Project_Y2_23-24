@@ -78,7 +78,7 @@ def my_Tables_Truncate():
    
 
    
-createAndDrop = 0
+createAndDrop = 10
 if createAndDrop == 1:
     print("Free space")
 if createAndDrop == 2:
@@ -141,13 +141,11 @@ def my_Day_Select_WeatherID(dataL, dataD):
     mycursor.execute(sql, values)
     #Fetches all results that matches the query
     myresult = mycursor.fetchone()
-    # if myresult == []:
-    #     print("nuh uh")
-    #     return False
-    #Prints all results that matches the query
-    # for p in myresult:
-    #     print(p)
-    return myresult
+    
+    if myresult == []:
+        return 1
+    else:
+        return int(myresult[0])
 
 def my_Hour_Select_Check(dataL, dataD, dataH):
     sql = "SELECT * FROM weatherHour WHERE location = %s AND date = %s AND hour = %s"
@@ -177,6 +175,16 @@ def my_Hour_Select_WeatherID(dataL, dataD, dataH):
         return 1
     else:
         return int(myresult[0])
+    
+def my_Hour_Select_WeatherID_Multiple(dataL, dataD):
+    #Finds the data from within the database that matches the parameters
+    sql = "SELECT weatherData FROM weatherHour WHERE location = %s AND date = %s"
+    values = (dataL, dataD, ) 
+    mycursor.execute(sql, values)
+    #Fetches all results that matches the query
+    myresult = mycursor.fetchall()
+   
+    return myresult
 
 def my_People_Select(data):
     sql = "SELECT * FROM people WHERE phoneNumber = %s"
@@ -385,10 +393,14 @@ if createAndDrop == 9:
     print("yo")
     
 if createAndDrop == 10:
-    tempemp = my_W_All_Select_WeatherID("feels_like",7, )
+    tempemp = my_W_All_Select_WeatherID("dt_txt",7, )
     print(tempemp)
 
+if createAndDrop == 11:
+    hourcheck = my_Hour_Select_WeatherID_Multiple("PN", "2024-06-12")
+    for i in hourcheck:
 
+        print(i[0])
 #mycursor.execute("SHOW TABLES")
 
 

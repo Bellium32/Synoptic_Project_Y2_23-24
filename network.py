@@ -41,7 +41,7 @@ def get_weather_emoji(weather_id):
     # Default emoji if condition is not found
     return emoji_map.get(weather_id, "❓")
 
-def hellhellhell(forecast, forecast_time):
+def weather_data_compile(forecast, forecast_time):
     #print(forecast)
     
         # Extract data from JSON
@@ -129,7 +129,7 @@ def main():
             forecast_date = forecast_time.date()
             forecast_day_day = calendar.day_name[forecast_time.weekday()]
             forecast_day_time = forecast_time.time()
-            forecast_ID = hellhellhell(forecast, forecast_time)
+            forecast_ID = weather_data_compile(forecast, forecast_time)
             hour_row_exist = weatherDB4.my_Hour_Select_Check("PN", str(forecast_date), str(forecast_day_time))
             day_row_exist = weatherDB4.my_Day_Select_Check("PN", str(forecast_date))
             WEATHERWIZARD = weatherDB4.my_W_Info_Select_WeatherID("PN", forecast_time)
@@ -179,7 +179,7 @@ def main():
             forecast_time = datetime.strptime(forecast['dt_txt'], "%Y-%m-%d %H:%M:%S")
             forecast_date = forecast_time.date()
             forecast_day_time = forecast_time.time()
-            forecast_ID = hellhellhell(forecast, forecast_time)
+            forecast_ID = weather_data_compile(forecast, forecast_time)
             
             if forecast_time.date() == today and forecast_time.hour <= 23:
                 forecast_day_ID = weatherDB4.my_Hour_Select_WeatherID("PN", forecast_date, forecast_day_time)
