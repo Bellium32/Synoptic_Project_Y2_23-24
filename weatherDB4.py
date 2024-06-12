@@ -172,7 +172,11 @@ def my_Hour_Select_WeatherID(dataL, dataD, dataH):
     #Prints all results that matches the query
     # for p in myresult:
     #     print(p)
-    return int(myresult[0])
+    
+    if myresult == []:
+        return 1
+    else:
+        return int(myresult[0])
 
 def my_People_Select(data):
     sql = "SELECT * FROM people WHERE phoneNumber = %s"

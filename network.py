@@ -108,40 +108,17 @@ def main():
     
     #weatherDB.my_Day_Insert("PU", "Saturday", "2024-06-8", "23.95", "20.82", "29.55", "overcast clouds")
     if forecast_data:
-        print("Today's Weather Forecast for Pu Ngaol:")
+        
         # Get today's date
         today = datetime.now().date()
         
         # Extract relevant data for each hour
-        for forecast in forecast_data['list']:
-            
-            forecast_time = datetime.strptime(forecast['dt_txt'], "%Y-%m-%d %H:%M:%S")
-            forecast_date = forecast_time.date()
-            forecast_day_time = forecast_time.time()
-            forecast_ID = hellhellhell(forecast, forecast_time)
-            
-            if forecast_time.date() == today and forecast_time.hour <= 23:
-                forecast_day_ID = weatherDB4.my_Hour_Select_WeatherID("PN", forecast_date, forecast_day_time)
-                
-                
-                temp = weatherDB4.my_W_All_Select_WeatherID("temp", forecast_day_ID)
-                weather_id = weatherDB4.my_W_All_Select_WeatherID("weather_id", forecast_day_ID)
-                weather_description = weatherDB4.my_W_All_Select_WeatherID("weather_description", forecast_day_ID)
-                weather_emoji = get_weather_emoji(weather_id)
-                #temp = forecast['main']['temp']
-                # weather_id = forecast['weather'][0]['id']
-                # weather_description = forecast['weather'][0]['description']
-                # weather_emoji = get_weather_emoji(weather_id)
-               
-               
-                # Print the weather information for the hour
-                print(f"{forecast_time.strftime('%Y-%m-%d %H:%M:%S')}: {temp}°C, {weather_description} {weather_emoji}")
+
        
-        print("\n5-Day Weather Forecast for Pu Ngaol:")
         # Initialize variables to calculate daily averages
         daily_temps = {}
         daily_weather = {}
-
+        print("Today's Weather Forecast for Pu Ngaol:")
         # Calculate average temperature and midday weather for each day
         for forecast in forecast_data['list']:
             
@@ -152,7 +129,7 @@ def main():
             forecast_date = forecast_time.date()
             forecast_day_day = calendar.day_name[forecast_time.weekday()]
             forecast_day_time = forecast_time.time()
-            
+            forecast_ID = hellhellhell(forecast, forecast_time)
             hour_row_exist = weatherDB4.my_Hour_Select_Check("PN", str(forecast_date), str(forecast_day_time))
             day_row_exist = weatherDB4.my_Day_Select_Check("PN", str(forecast_date))
             WEATHERWIZARD = weatherDB4.my_W_Info_Select_WeatherID("PN", forecast_time)
@@ -196,6 +173,31 @@ def main():
             if forecast_time.hour == 12:
                 daily_weather[forecast_date] = (weather_description, weather_emoji)
 
+        
+        for forecast in forecast_data['list']:
+            
+            forecast_time = datetime.strptime(forecast['dt_txt'], "%Y-%m-%d %H:%M:%S")
+            forecast_date = forecast_time.date()
+            forecast_day_time = forecast_time.time()
+            forecast_ID = hellhellhell(forecast, forecast_time)
+            
+            if forecast_time.date() == today and forecast_time.hour <= 23:
+                forecast_day_ID = weatherDB4.my_Hour_Select_WeatherID("PN", forecast_date, forecast_day_time)
+                
+                
+                temp = weatherDB4.my_W_All_Select_WeatherID("temp", forecast_day_ID)
+                weather_id = weatherDB4.my_W_All_Select_WeatherID("weather_id", forecast_day_ID)
+                weather_description = weatherDB4.my_W_All_Select_WeatherID("weather_description", forecast_day_ID)
+                weather_emoji = get_weather_emoji(weather_id)
+                #temp = forecast['main']['temp']
+                # weather_id = forecast['weather'][0]['id']
+                # weather_description = forecast['weather'][0]['description']
+                # weather_emoji = get_weather_emoji(weather_id)
+               
+               
+                # Print the weather information for the hour
+                print(f"{forecast_time.strftime('%Y-%m-%d %H:%M:%S')}: {temp}°C, {weather_description} {weather_emoji}")
+        print("\n5-Day Weather Forecast for Pu Ngaol:")
         # Print the 5-day forecast
         for date, temps in daily_temps.items():
             avg_temp = sum(temps) / len(temps)
