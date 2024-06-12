@@ -34,11 +34,10 @@ match todaytimelimit:
                 starttimecount = 7
             
 
-hour_repository = ["00:00:00", "03:00:00", "06:00:00",
-                   "09:00:00", "12:00:00", "15:00:00",
-                   "18:00:00", "21:00:00"]
+
 
 def get_weather_message_hour(forecast_day_ID):
+                #All of these functions get 
                 temp = weatherDB4.my_W_All_Select_WeatherID("temp", forecast_day_ID)
                 weather_id = weatherDB4.my_W_All_Select_WeatherID("weather_id", forecast_day_ID)
                 weather_description = weatherDB4.my_W_All_Select_WeatherID("weather_description", forecast_day_ID)
@@ -77,25 +76,51 @@ def get_weather_message_days(weatherID_Day, Day):
 # print(todaydate)
 # print(tomorrow)
 # print(today)
-print("Weather of the hour: \n")
-for hour in hour_repository[starttimecount:]:
-        
-        #print(hour)
-        weatherID_Hour = weatherDB4.my_Hour_Select_WeatherID("PN", today, hour)
-        WanderWeatherHour = get_weather_message_hour(weatherID_Hour)
-        print(WanderWeatherHour)
-        #print(weatherID_Hour)
 
-#get_weather_message(weatherID_Day)
+def weather_hour_List(today):
+        hour_repository = ["00:00:00", "03:00:00", "06:00:00",
+                   "09:00:00", "12:00:00", "15:00:00",
+                   "18:00:00", "21:00:00"]
+        match todaytimelimit:
+            case 21 | 22 | 23 : 
+                    tomorrow = datetime.now().date() + timedelta(1)
+                    today = tomorrow
+                    starttimecount = 0
+            case 00 | 1 | 2 : 
+                    starttimecount = 1
+            case 3 | 4 | 5 : 
+                    starttimecount = 2
+            case 6 | 7 | 8 : 
+                    starttimecount = 3
+            case 9 | 10 | 11 : 
+                    starttimecount = 4
+            case 12 | 13 | 14 : 
+                    starttimecount = 5
+            case 15 | 16 | 17 : 
+                    starttimecount = 6
+            case 18 | 19 | 20 : 
+                    starttimecount = 7
 
-print("\n Weather of the next 5 day: \n")
-for days in range(4): 
+        for hour in hour_repository[starttimecount:]:
+            
+            #print(hour)
+            weatherID_Hour = weatherDB4.my_Hour_Select_WeatherID("PN", today, hour)
+            WanderWeatherHour = get_weather_message_hour(weatherID_Hour)
+            print(WanderWeatherHour)
+          
+def weather_day_List(fivedays):
+    for days in range(4): 
         weatherID_Day = weatherDB4.my_Day_Select_WeatherID("PN", fivedays)
         weatherDay_Day = weatherDB4.my_Day_Select_Day("PN", fivedays)
         #get_weather_message_days(weatherID_Day)
         WanderWeatherDay = get_weather_message_days(weatherID_Day, weatherDay_Day)
         fivedays = fivedays + timedelta(1)
         print(WanderWeatherDay)
+print("Weather of the hour: \n")
+weather_hour_List(today)
+
+print("\n Weather of the next 5 day: \n")
+weather_day_List(fivedays)
 # message = client.messages.create (
 #     body = "hey its ash, it works :)",
 #     from_=keys.twilio_number,

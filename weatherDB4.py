@@ -38,7 +38,7 @@ else:
     mycursor2 = mydb.cursor()
     databaseRECORD = False
 def my_Tables_Create():
-    #SQL commands to create tables
+    #############SQL commands to create tables
     
     mycursor.execute("CREATE TABLE weatherInfo (wDataId INT AUTO_INCREMENT PRIMARY KEY, dt INT, "
                      "temp FLOAT(24), feels_like FLOAT(24), temp_min FLOAT(24), "
@@ -54,14 +54,9 @@ def my_Tables_Create():
                      "FOREIGN KEY (weatherData) REFERENCES weatherInfo(wDataId))")
     mycursor.execute("CREATE TABLE people (peopleId INT AUTO_INCREMENT PRIMARY KEY, fname VARCHAR(255), lname VARCHAR(255), phoneNumber VARCHAR(15))")
                      
-    
-    
-    
-  
-
 
 def my_Tables_Drop():
-    #SQL commands to delete (drop) all tables
+    #######SQL commands to delete (drop) all tables
     mycursor.execute("DROP TABLE IF EXISTS weatherDay")
     mycursor.execute("DROP TABLE IF EXISTS weatherHour")
     mycursor.execute("DROP TABLE IF EXISTS people")
@@ -69,6 +64,7 @@ def my_Tables_Drop():
 
     
 def my_Tables_Truncate():
+    #######SQL commands to delete information inside (truncate) all weather tables
     mycursor.execute("SET FOREIGN_KEY_CHECKS = 0")
     mycursor.execute("TRUNCATE TABLE weatherInfo")
     mycursor.execute("TRUNCATE TABLE weatherDay")
@@ -77,31 +73,31 @@ def my_Tables_Truncate():
     
    
 
-   
-createAndDrop = 12
-if createAndDrop == 1:
+   ###############Set to 2 to create the tables 
+DebugandTesting = 4
+if DebugandTesting == 1:
     print("Free space")
-if createAndDrop == 2:
+if DebugandTesting == 2:
     my_Tables_Create()
     
-if createAndDrop == 97:
+if DebugandTesting == 97:
     my_Tables_Truncate()
     
-if createAndDrop == 98:
+if DebugandTesting == 98:
     mycursor.execute("DROP DATABASE weatherdb2")
 
-if createAndDrop == 99:
+if DebugandTesting == 99:
     my_Tables_Drop()
     
 def my_Day_Insert(location, day, date, weatherData):
-    #Inserts data into the database, just pass the arguments into the commands 
-    #So location = location etc
+    #####Inserts data into the database, just pass the arguments into the commands 
+    #####So location = location etc
     sql = "INSERT INTO weatherDay (location, day, date, weatherData) VALUES (%s, %s, %s, %s)"
     values = (location, day, date, weatherData)
-    #values not only makes it easier to pass information from parameters
-    #But also escapes the values to prevent sql injection
+    ####values not only makes it easier to pass information from parameters
+    #####But also escapes the values to prevent sql injection
     mycursor.execute(sql, values)
-    #Commits the changes into the database
+    ###ommits the changes into the database
     mydb.commit()
     #Tells user if records where inserted
     if databaseRECORD == True:
@@ -124,11 +120,15 @@ def my_people_Insert(fname, lname, phoneNumber):
         print(mycursor.rowcount, "record inserted.")
 
 def my_Day_Select_Check(dataL, dataD):
-    #Finds the data from within the database that matches the parameters
+    #####Finds the weatherdata from within the database that matches the parameters given
     sql = "SELECT * FROM weatherDay WHERE location = %s AND date = %s"
     values = (dataL, dataD, ) 
     mycursor.execute(sql, values)
-    #Fetches all results that matches the query
+    #Fetches all results that matches the query (there should only be one)
+    ###If the data exists it returns False 
+    ###If the data doesn't exist it returns true
+    ###If the data doesn't exist it inserts new data, if it does exist it updates current data
+    ###This will can be seen on line 133 of network.py (or further down)
     myresult = mycursor.fetchall()
     if myresult == []:      
         return False
@@ -139,7 +139,7 @@ def my_Day_Select_WeatherID(dataL, dataD):
     sql = "SELECT weatherData FROM weatherDay WHERE location = %s AND date = %s"
     values = (dataL, dataD, ) 
     mycursor.execute(sql, values)
-    #Fetches all results that matches the query
+    #Fetches the results that matches the query
     myresult = mycursor.fetchone()
 
     if myresult == []:
@@ -172,17 +172,32 @@ def my_Hour_Select_Check(dataL, dataD, dataH):
     return True
 
 def my_Hour_Select_WeatherID(dataL, dataD, dataH):
-    #Finds the data from within the database that matches the parameters
-    sql = "SELECT weatherData FROM weatherHour WHERE location = %s AND date = %s AND hour = %s"
-    values = (dataL, dataD, dataH) 
-    mycursor.execute(sql, values)
-    #Fetches all results that matches the query
-    myresult = mycursor.fetchone()
 
-    if myresult == []:
-        return 1
-    else:
-        return int(myresult[0])
+    try:
+        #Finds the data from within the database that matches the parameters
+        sql = "SELECT weatherData FROM weatherHour WHERE location = %s AND date = %s AND hour = %s"
+        values = (dataL, dataD, dataH) 
+        mycursor.execute(sql, values)
+    except (mysql.Error, mysql.Warning) as e:
+        print(e)
+        return None
+
+    try: 
+            #Fetches all results that matches the query
+        myresult = mycursor.fetchone()
+
+        if myresult == []:
+            return 1
+        else:
+            return int(myresult[0])
+    except TypeError as e:
+        print(e)
+        return None
+
+
+        
+
+
     
 def my_Hour_Select_WeatherID_Multiple(dataL, dataD):
     #Finds the data from within the database that matches the parameters
@@ -375,42 +390,42 @@ def my_WeatherInfo_Update(dt, temp, feels_like, temp_min, temp_max, pressure, se
     if databaseRECORD == True:
         print(mycursor.rowcount, "record(s) affected")
 
-if createAndDrop == 3:                   
+if DebugandTesting == 3:                   
     my_Day_Insert("PN", "Monday", "2024-06-06", "2114")
     my_Hour_Insert("MO", "09:00", "2024-06-06", "6885")
     my_people_Insert("Timmothy", "Smith", "071411 26345")
 
-if createAndDrop == 4:
+if DebugandTesting == 4:
     my_Day_Select_WeatherID("PN", '2024-06-13')
 
-if createAndDrop == 5:
+if DebugandTesting == 5:
     my_Day_Insert("PN", "Tuesday", "2024-06-07", "8442")
 
-if createAndDrop == 6:
+if DebugandTesting == 6:
     my_Hour_Select_Check("MO", '2024-06-08', "09:00")
 
-if createAndDrop == 7:
+if DebugandTesting == 7:
     my_People_Select("071411 26345")
     
-if createAndDrop == 8:
+if DebugandTesting == 8:
     my_Day_Update_Weather("4855","PN", "2024-06-06")
     my_Hour_Update_Weather("2008","MO", "2024-06-06", "09:00")
 
-if createAndDrop == 9:
+if DebugandTesting == 9:
     #my_Day_Select_Check("MO", "Teheehee")
     print("yo")
     
-if createAndDrop == 10:
+if DebugandTesting == 10:
     tempemp = my_W_All_Select_WeatherID("dt_txt",7, )
     print(tempemp)
 
-if createAndDrop == 11:
+if DebugandTesting == 11:
     hourcheck = my_Hour_Select_WeatherID_Multiple("PN", "2024-06-12")
     for i in hourcheck:
 
         print(i[0])
 
-if createAndDrop == 12:
+if DebugandTesting == 12:
     printyprint = my_Hour_Select_WeatherID("PN", "2024-06-12", "15:00:00")
     print(printyprint)
 #mycursor.execute("SHOW TABLES")
