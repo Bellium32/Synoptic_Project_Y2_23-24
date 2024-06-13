@@ -37,6 +37,8 @@ else:
     mycursor = mydb.cursor(buffered=True)
     mycursor2 = mydb.cursor()
     databaseRECORD = False
+
+
 def my_Tables_Create():
     #############SQL commands to create tables
     mycursor.execute("CREATE TABLE weatherInfo (wDataId INT AUTO_INCREMENT PRIMARY KEY, dt INT, "
@@ -139,28 +141,14 @@ def my_Day_Select_WeatherID(dataL, dataD):
     values = (dataL, dataD, ) 
     
     #Fetches the results that matches the query
-   
-    try:
-        try:
-            mycursor.execute(sql, values)
+    mycursor.execute(sql, values)
             # NB : you won't get an IntegrityError when reading
-        except (mysql.Error, mysql.Warning) as e:
-            print(e)
-            return None
-
-        try: 
-            myresult = mycursor.fetchone()
-            if myresult == []:
-                return 1
-            else:
-                return int(myresult[0])
-        except TypeError as e:
-            print(e)
-            return None
-
-    finally:
-        mydb.close()
- 
+        
+    myresult = mycursor.fetchone()
+    if myresult == []:
+        return 1
+    else:
+        return int(myresult[0])
 
 def my_Day_Select_Day(dataL, dataD):
     #Finds the data from within the database that matches the parameters
@@ -175,7 +163,6 @@ def my_Day_Select_Day(dataL, dataD):
     else:
         return str(myresult[0])
 
-
 def my_Hour_Select_Check(dataL, dataD, dataH):
     sql = "SELECT * FROM weatherHour WHERE location = %s AND date = %s AND hour = %s"
     values = (dataL, dataD, dataH) 
@@ -188,16 +175,12 @@ def my_Hour_Select_Check(dataL, dataD, dataH):
 
 def my_Hour_Select_WeatherID(dataL, dataD, dataH):
 
-    try:
+    
         #Finds the data from within the database that matches the parameters
         sql = "SELECT weatherData FROM weatherHour WHERE location = %s AND date = %s AND hour = %s"
         values = (dataL, dataD, dataH) 
         mycursor.execute(sql, values)
-    except (mysql.Error, mysql.Warning) as e:
-        print(e)
-        return None
 
-    try: 
             #Fetches all results that matches the query
         myresult = mycursor.fetchone()
 
@@ -205,11 +188,7 @@ def my_Hour_Select_WeatherID(dataL, dataD, dataH):
             return 1
         else:
             return int(myresult[0])
-    except TypeError as e:
-        print(e)
-        return None
-
-    
+   
 def my_Hour_Select_WeatherID_Multiple(dataL, dataD):
     #Finds the data from within the database that matches the parameters
     sql = "SELECT weatherData FROM weatherHour WHERE location = %s AND date = %s"
@@ -406,7 +385,7 @@ if DebugandTesting == 3:
     my_people_Insert("Timmothy", "Smith", "071411 26345")
 
 if DebugandTesting == 4:
-    print(my_Day_Select_WeatherID("PN", '2024-06-11'))
+    print(my_Day_Select_WeatherID("PN", '2024-06-13'))
 
 if DebugandTesting == 5:
     my_Day_Insert("PN", "Tuesday", "2024-06-07", "8442")
