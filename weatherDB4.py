@@ -39,7 +39,6 @@ else:
     databaseRECORD = False
 def my_Tables_Create():
     #############SQL commands to create tables
-    
     mycursor.execute("CREATE TABLE weatherInfo (wDataId INT AUTO_INCREMENT PRIMARY KEY, dt INT, "
                      "temp FLOAT(24), feels_like FLOAT(24), temp_min FLOAT(24), "
                      "temp_max FLOAT(24), pressure INT, sea_level INT, grnd_level INT, humidity INT, temp_kf FLOAT(24), "
@@ -74,7 +73,7 @@ def my_Tables_Truncate():
    
 
    ###############Set to 2 to create the tables 
-DebugandTesting = 0
+DebugandTesting = 4
 if DebugandTesting == 1:
     print("Free space")
 if DebugandTesting == 2:
@@ -138,14 +137,30 @@ def my_Day_Select_WeatherID(dataL, dataD):
     #Finds the data from within the database that matches the parameters
     sql = "SELECT weatherData FROM weatherDay WHERE location = %s AND date = %s"
     values = (dataL, dataD, ) 
-    mycursor.execute(sql, values)
+    
     #Fetches the results that matches the query
-    myresult = mycursor.fetchone()
+   
+    try:
+        try:
+            mycursor.execute(sql, values)
+            # NB : you won't get an IntegrityError when reading
+        except (mysql.Error, mysql.Warning) as e:
+            print(e)
+            return None
 
-    if myresult == []:
-        return 1
-    else:
-        return int(myresult[0])
+        try: 
+            myresult = mycursor.fetchone()
+            if myresult == []:
+                return 1
+            else:
+                return int(myresult[0])
+        except TypeError as e:
+            print(e)
+            return None
+
+    finally:
+        mydb.close()
+ 
 
 def my_Day_Select_Day(dataL, dataD):
     #Finds the data from within the database that matches the parameters
@@ -391,7 +406,7 @@ if DebugandTesting == 3:
     my_people_Insert("Timmothy", "Smith", "071411 26345")
 
 if DebugandTesting == 4:
-    my_Day_Select_WeatherID("PN", '2024-06-13')
+    print(my_Day_Select_WeatherID("PN", '2024-06-11'))
 
 if DebugandTesting == 5:
     my_Day_Insert("PN", "Tuesday", "2024-06-07", "8442")
