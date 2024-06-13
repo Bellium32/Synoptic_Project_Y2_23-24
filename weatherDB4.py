@@ -122,16 +122,32 @@ def my_Day_Select_Check(dataL, dataD):
     #####Finds the weatherdata from within the database that matches the parameters given
     sql = "SELECT * FROM weatherDay WHERE location = %s AND date = %s"
     values = (dataL, dataD, ) 
-    mycursor.execute(sql, values)
+    
     #Fetches all results that matches the query (there should only be one)
     ###If the data exists it returns False 
     ###If the data doesn't exist it returns true
     ###If the data doesn't exist it inserts new data, if it does exist it updates current data
     ###This will can be seen on line 133 of network.py (or further down)
-    myresult = mycursor.fetchall()
-    if myresult == []:      
-        return False
-    return True
+
+    try:
+        try:
+            mycursor.execute(sql, values)
+            # NB : you won't get an IntegrityError when reading
+        except (mysql.Error, mysql.Warning) as e:
+            print(e)
+            return None
+
+        try: 
+            myresult = mycursor.fetchall()
+            if myresult == []:      
+                return False
+            return True
+        except TypeError as e:
+            print(e)
+            return None
+
+    finally:
+        mydb.close()
 
 def my_Day_Select_WeatherID(dataL, dataD):
     #Finds the data from within the database that matches the parameters
@@ -167,81 +183,167 @@ def my_Day_Select_Day(dataL, dataD):
     sql = "SELECT day FROM weatherDay WHERE location = %s AND date = %s"
     values = (dataL, dataD, ) 
     mycursor.execute(sql, values)
-    #Fetches all results that matches the query
-    myresult = mycursor.fetchone()
 
-    if myresult == []:
-        return 1
-    else:
-        return str(myresult[0])
+    try:
+        try:
+            mycursor.execute(sql, values)
+            # NB : you won't get an IntegrityError when reading
+        except (mysql.Error, mysql.Warning) as e:
+            print(e)
+            return None
+        try: 
+    #Fetches all results that matches the query
+            myresult = mycursor.fetchone()
+
+            if myresult == []:
+                return 1
+            else:
+                return str(myresult[0])
+        except TypeError as e:
+            print(e)
+            return None
+
+    finally:
+        mydb.close()    
 
 
 def my_Hour_Select_Check(dataL, dataD, dataH):
     sql = "SELECT * FROM weatherHour WHERE location = %s AND date = %s AND hour = %s"
     values = (dataL, dataD, dataH) 
     mycursor.execute(sql, values)
-    myresult = mycursor.fetchall()
-    if myresult == []:
-        return False
-        #print("nuh uh")
-    return True
+
+    try:
+        try:
+            mycursor.execute(sql, values)
+            # NB : you won't get an IntegrityError when reading
+        except (mysql.Error, mysql.Warning) as e:
+            print(e)
+            return None
+        try: 
+    #Fetches all results that matches the query
+            myresult = mycursor.fetchall()
+            if myresult == []:
+                return False
+                #print("nuh uh")
+            return True
+        except TypeError as e:
+            print(e)
+            return None
+
+    finally:
+        mydb.close()    
 
 def my_Hour_Select_WeatherID(dataL, dataD, dataH):
 
+    #Finds the data from within the database that matches the parameters
+    sql = "SELECT weatherData FROM weatherHour WHERE location = %s AND date = %s AND hour = %s"
+    values = (dataL, dataD, dataH) 
+    mycursor.execute(sql, values)
+
     try:
-        #Finds the data from within the database that matches the parameters
-        sql = "SELECT weatherData FROM weatherHour WHERE location = %s AND date = %s AND hour = %s"
-        values = (dataL, dataD, dataH) 
-        mycursor.execute(sql, values)
-    except (mysql.Error, mysql.Warning) as e:
-        print(e)
-        return None
+        try:
+            mycursor.execute(sql, values)
+            # NB : you won't get an IntegrityError when reading
+        except (mysql.Error, mysql.Warning) as e:
+            print(e)
+            return None
+        try: 
+        #Fetches the results that matches the query
+            myresult = mycursor.fetchone()
 
-    try: 
-            #Fetches all results that matches the query
-        myresult = mycursor.fetchone()
+            if myresult == []:
+                return 1
+            else:
+                return int(myresult[0])
+        except TypeError as e:
+            print(e)
+            return None
 
-        if myresult == []:
-            return 1
-        else:
-            return int(myresult[0])
-    except TypeError as e:
-        print(e)
-        return None
+    finally:
+        mydb.close()            
+
 
     
 def my_Hour_Select_WeatherID_Multiple(dataL, dataD):
     #Finds the data from within the database that matches the parameters
     sql = "SELECT weatherData FROM weatherHour WHERE location = %s AND date = %s"
     values = (dataL, dataD, ) 
-    mycursor.execute(sql, values)
-    #Fetches all results that matches the query
-    myresult = mycursor.fetchall()
-   
-    return myresult
+
+    try:
+        try:
+            mycursor.execute(sql, values)
+            # NB : you won't get an IntegrityError when reading
+        except (mysql.Error, mysql.Warning) as e:
+            print(e)
+            return None
+        try: 
+            #Fetches all results that matches the query
+            myresult = mycursor.fetchall()
+        
+            return myresult
+        except TypeError as e:
+            print(e)
+            return None
+
+    finally:
+        mydb.close()     
+
 
 def my_People_Select(data):
     sql = "SELECT * FROM people WHERE phoneNumber = %s"
     values = (data, ) 
-    mycursor.execute(sql, values)
-    myresult = mycursor.fetchall()
-    if myresult == []:
-        print("nuh uh")
-        return False
-    for p in myresult:
-        print(p)
+
+    try:
+        try:
+            mycursor.execute(sql, values)
+            # NB : you won't get an IntegrityError when reading
+        except (mysql.Error, mysql.Warning) as e:
+            print(e)
+            return None
+        try: 
+            #Fetches all results that matches the query
+            myresult = mycursor.fetchall()
+            if myresult == []:
+                print("nuh uh")
+                return False
+            for p in myresult:
+                print(p)
+        except TypeError as e:
+            print(e)
+            return None
+
+    finally:
+        mydb.close()
+    
 
 def my_Day_Update_Weather(dataW, dataL, dataD, ):
     #Updates the database for the weatherData on that day + location
     sql = "UPDATE weatherDay SET weatherData = %s WHERE location = %s AND date = %s"
     values = (dataW, dataL, dataD, ) 
-    mycursor2.execute(sql, values)
-    myresult = mycursor.fetchall()
-    # for p in myresult:
-    #     print(p)
-    mydb.commit()
-    if databaseRECORD == True:
-        print(mycursor.rowcount, "record(s) affected")    
+    
+
+    try:
+        try:
+            mycursor2.execute(sql, values)
+            # NB : you won't get an IntegrityError when reading
+        except (mysql.Error, mysql.Warning) as e:
+            print(e)
+            return None
+        try: 
+            #Fetches all results that matches the query
+            myresult = mycursor.fetchall()
+            # for p in myresult:
+            #     print(p)
+            mydb.commit()
+            if databaseRECORD == True:
+                print(mycursor.rowcount, "record(s) affected")   
+
+        except TypeError as e:
+            print(e)
+            return None
+
+    finally:
+        mydb.close() 
         
 def my_Hour_Update_Weather(dataW, dataL, dataD, dataH, ):
     sql = "UPDATE weatherHour SET weatherData = %s WHERE location = %s AND date = %s AND hour = %s"
@@ -406,7 +508,7 @@ if DebugandTesting == 3:
     my_people_Insert("Timmothy", "Smith", "071411 26345")
 
 if DebugandTesting == 4:
-    print(my_Day_Select_WeatherID("PN", '2024-06-11'))
+    print(my_Day_Select_WeatherID("PN", '2024-06-13'))
 
 if DebugandTesting == 5:
     my_Day_Insert("PN", "Tuesday", "2024-06-07", "8442")
